@@ -171,10 +171,11 @@ input[type=range]{flex:1;min-width:80px}
 .ttl.s-xs{font-size:1.05em}
 .ttl.s-s{font-size:1.2em}
 .ttl.s-l{font-size:1.8em}
-.ttl.b-square{border:2px solid var(--accent);padding:.08em .45em}
-.ttl.b-round{border:2px solid var(--accent);padding:.08em .6em;border-radius:.75em}
-.ttl.b-fsquare{background:var(--accent);color:var(--onaccent);padding:.1em .45em}
-.ttl.b-fround{background:var(--accent);color:var(--onaccent);padding:.1em .6em;border-radius:.75em}
+.bx{display:inline-block;line-height:1.35;margin:1px 0}
+.ttl.b-square,.bx.b-square{border:2px solid var(--accent);padding:.08em .45em}
+.ttl.b-round,.bx.b-round{border:2px solid var(--accent);padding:.08em .6em;border-radius:.75em}
+.ttl.b-fsquare,.bx.b-fsquare{background:var(--accent);color:var(--onaccent);padding:.1em .45em}
+.ttl.b-fround,.bx.b-fround{background:var(--accent);color:var(--onaccent);padding:.1em .6em;border-radius:.75em}
 
 .win-foot{height:60px;flex:none;display:flex;align-items:center;gap:10px;padding:0 14px 0 16px;background:var(--footer);
   border-top:1px solid var(--footline);box-shadow:inset 0 1px 0 var(--footline2)}
@@ -332,7 +333,7 @@ input[type=range]{flex:1;min-width:80px}
           <div class="row">
             <button class="b primary" id="ttlBtn">★ 타이틀 적용/해제</button>
           </div>
-          <div class="row"><label class="t">타이틀 박스</label>
+          <div class="row"><label class="t">글자 박스</label>
             <button class="b tbox-btn on" data-box="b-none">없음</button>
             <button class="b tbox-btn" data-box="b-square">네모</button>
             <button class="b tbox-btn" data-box="b-round">둥근</button>
@@ -346,6 +347,7 @@ input[type=range]{flex:1;min-width:80px}
             <button class="b tsize-btn" data-size="s-l">크게</button>
           </div>
           <p class="hint"><b>말머리</b>: 줄에 커서를 두거나 여러 줄을 선택하고 [● 말머리]. 엔터 = 다음 말머리, <b>Shift+엔터</b> = 말머리 없이 들여쓴 줄바꿈, 빈 말머리에서 엔터 = 말머리 끝내기.</p>
+          <p class="hint"><b>글자 박스</b>는 타이틀 없이도 돼요: 글자를 드래그하고 [네모]/[둥근] 등을 누르면 크기 그대로 박스만 씌워져요. 박스 안에 커서를 두고 [없음]을 누르면 해제.</p>
           <p class="hint">글자를 드래그해서 선택한 뒤 버튼을 누르세요. 타이틀 안에 커서를 두고 박스/크기 버튼을 누르면 그 타이틀만 바뀌어요.</p>
         </fieldset>
 
@@ -987,8 +989,12 @@ stage.addEventListener('keydown', e=>{
 function ttlAt(node){ const el = node && (node.nodeType===3? node.parentElement : node); return el && el.closest ? el.closest('.ttl') : null; }
 function unwrap(el){ const p = el.parentNode; while(el.firstChild) p.insertBefore(el.firstChild, el); p.removeChild(el); }
 function curTtl(){ if(!savedRange) return null; return ttlAt(savedRange.startContainer) || ttlAt(savedRange.endContainer); }
+function bxAt(node){ const el = node && (node.nodeType===3? node.parentElement : node); return el && el.closest ? el.closest('.ttl, .bx') : null; }
+function curBox(){ if(!savedRange) return null; return bxAt(savedRange.startContainer) || bxAt(savedRange.endContainer); }
+const BOXES = ['b-none','b-square','b-round','b-fsquare','b-fround'];
 function syncTitleButtons(){
-  const t = curTtl(); const box = t ? (['b-none','b-square','b-round','b-fsquare','b-fround'].find(c=>t.classList.contains(c))||'b-none') : titleBox;
+  const bx = curBox(); const box = bx ? (BOXES.find(c=>bx.classList.contains(c))||'b-none') : titleBox;
+  const t = curTtl();
   const size = t ? (['s-xs','s-s','s-m','s-l'].find(c=>t.classList.contains(c))||'s-m') : titleSize;
   document.querySelectorAll('.tbox-btn').forEach(b=>b.classList.toggle('on', b.dataset.box===box));
   document.querySelectorAll('.tsize-btn').forEach(b=>b.classList.toggle('on', b.dataset.size===size));
@@ -996,7 +1002,10 @@ function syncTitleButtons(){
 $('#ttlBtn').onclick = ()=>{
   if(!restore()){ setStatus('타이틀로 만들 글자를 드래그해서 선택하세요'); return; }
   const s = getSelection(), r = s.getRangeAt(0); const t = ttlAt(r.startContainer) || ttlAt(r.endContainer);
-  if(t){ unwrap(t); setStatus('타이틀 해제'); save(); return; }
+  if(t){ if(BOXES.slice(1).some(c=>t.classList.contains(c))){ t.classList.remove('ttl','s-xs','s-s','s-m','s-l'); t.classList.add('bx'); setStatus('타이틀 해제 (박스는 유지)'); }
+    else { unwrap(t); setStatus('타이틀 해제'); } save(); return; }
+  const bx0 = bxAt(r.startContainer) || bxAt(r.endContainer);
+  if(bx0){ bx0.classList.remove('bx'); bx0.classList.add('ttl', titleSize); setStatus('타이틀 적용'); save(); syncTitleButtons(); return; }
   if(r.collapsed){ setStatus('타이틀로 만들 글자를 드래그해서 선택하세요'); return; }
   const span = document.createElement('span'); span.className = `ttl ${titleBox} ${titleSize}`;
   span.appendChild(r.extractContents()); span.querySelectorAll('.ttl').forEach(unwrap);
@@ -1004,8 +1013,21 @@ $('#ttlBtn').onclick = ()=>{
   setStatus('타이틀 적용'); save();
 };
 document.querySelectorAll('.tbox-btn').forEach(b=> b.onclick = ()=>{
-  titleBox = b.dataset.box; const t = curTtl();
-  if(t){ t.classList.remove('b-none','b-square','b-round','b-fsquare','b-fround'); t.classList.add(titleBox); save(); }
+  titleBox = b.dataset.box;
+  restore(); const s = getSelection(); const r = s.rangeCount ? s.getRangeAt(0) : null;
+  const ex = r && lastBox && lastBox.contains(r.commonAncestorContainer) ? (bxAt(r.startContainer) || bxAt(r.endContainer)) : null;
+  if(ex){
+    if(ex.classList.contains('bx') && titleBox==='b-none'){ unwrap(ex); setStatus('박스 해제'); }
+    else { ex.classList.remove(...BOXES); ex.classList.add(titleBox); setStatus('박스 모양 변경'); }
+    save();
+  } else if(r && !r.collapsed && lastBox && lastBox.contains(r.commonAncestorContainer) && !lastBox.classList.contains('single')){
+    if(titleBox!=='b-none'){
+      const span = document.createElement('span'); span.className = `bx ${titleBox}`;
+      span.appendChild(r.extractContents()); span.querySelectorAll('.bx').forEach(unwrap);
+      r.insertNode(span); const nr = document.createRange(); nr.selectNodeContents(span); s.removeAllRanges(); s.addRange(nr);
+      setStatus('글자 박스 적용'); save();
+    }
+  } else setStatus('박스를 씌울 글자를 드래그해서 선택하세요');
   syncTitleButtons(); });
 document.querySelectorAll('.tsize-btn').forEach(b=> b.onclick = ()=>{
   titleSize = b.dataset.size; const t = curTtl();
