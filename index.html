@@ -156,14 +156,15 @@ input[type=range]{flex:1;min-width:80px}
 .caption{display:none;position:relative;margin:12px 20px 0;font-size:12px;line-height:1.5;min-height:20px;max-height:66px;overflow:hidden;
   text-shadow:var(--sideshadow)}
 
-.main{flex:1;min-width:0;display:flex;flex-direction:column;padding:20px 26px 14px 26px;color:var(--text)}
+.main{position:relative;flex:1;min-width:0;display:flex;flex-direction:column;padding:20px 26px 14px 26px;color:var(--text)}
 .idrow{display:flex;align-items:center;gap:8px;flex:none;margin-bottom:14px}
 .idrow .lbl{font:700 12px var(--uifont,'Tahoma','Pretendard',sans-serif);color:var(--sub);white-space:nowrap}
 .idrow .field{flex:1;min-width:0;height:26px;line-height:24px;padding:0 7px;font-size:13.5px;white-space:nowrap;overflow:hidden;
   background:var(--fieldbg);border:1px solid var(--fieldbd);color:var(--fieldtext);border-radius:var(--fr)}
 .idrow .field.idf{flex:.8}
 .tbox{flex:1 1 0;min-height:0;overflow:hidden;font-size:14px;line-height:1.6;word-break:keep-all;overflow-wrap:anywhere;padding:2px}
-.tgap{height:26px;flex:none}
+.divlayer{position:absolute;pointer-events:none;z-index:5}
+.divlayer .obj{pointer-events:auto}
 
 .ttl{display:inline-block;font-weight:800;font-size:1.4em;line-height:1.25;color:var(--titlecolor);margin:1px 0;letter-spacing:-.01em}
 .bl{position:relative;padding-left:1.15em}
@@ -380,7 +381,7 @@ input[type=range]{flex:1;min-width:80px}
             <button class="b" id="divColorApply">색 적용</button>
             <button class="b" id="divColorReset">시안 색</button>
           </div>
-          <p class="hint">선을 클릭하면 선택돼요. 끝의 네모로 길이 조절, 빨간 ✕ 또는 Delete 키로 삭제 (원래 있던 선도 지울 수 있어요).</p>
+          <p class="hint">구분선은 오른쪽 글 상자 안에서만 움직여요. 선을 클릭하면 선택돼요. 끝의 네모로 길이 조절, 빨간 ✕ 또는 Delete 키로 삭제 (원래 있던 선도 지울 수 있어요).</p>
         </fieldset>
 
         <fieldset>
@@ -450,7 +451,7 @@ input[type=range]{flex:1;min-width:80px}
 const W = 1200, H = 800;
 const $ = s => document.querySelector(s);
 const stage = $('#stage'), scene = $('#scene'), wrap = $('#stageWrap');
-const KEY = 'xp_profile_wizard_v1';
+const KEY = 'xp_profile_wizard_v2';
 
 /* ---------- 아이콘 (직접 그린 SVG) ---------- */
 const svg = s => 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(s);
@@ -826,9 +827,8 @@ function defaultScene(){
           <span class="lbl single" contenteditable="true">NAME</span><span class="field single" contenteditable="true">이름을 적어 주세요</span>
           <span class="lbl single" contenteditable="true">ID</span><span class="field idf single" contenteditable="true">@my_id</span>
         </div>
-        <div class="tbox" id="box1" contenteditable="true"><span class="ttl b-none s-m">Welcome to the<br>프로필 설치 마법사</span><div><br></div><div>이 마법사는 저를 알아가는 과정을 안내합니다.</div><div>자기소개를 자유롭게 적어 주세요.</div><div><br></div><div>계속하려면 [Next]를 클릭하세요.</div></div>
-        <div class="tgap"></div>
-        <div class="tbox" id="box2" contenteditable="true"><span class="ttl b-round s-s">ABOUT ME</span><div>♡ 좋아하는 것 : </div><div>✕ 싫어하는 것 : </div><div>☆ 요즘 빠진 것 : </div><div>✉ 연락 : </div></div>
+        <div class="tbox" id="box1" contenteditable="true"><span class="ttl b-none s-m">Welcome to the<br>프로필 설치 마법사</span><div><br></div><div>이 마법사는 저를 알아가는 과정을 안내합니다.</div><div>자기소개를 자유롭게 적어 주세요.</div><div><br></div><div>계속하려면 [Next]를 클릭하세요.</div><div><br></div><div><br></div><div><span class="ttl b-round s-s" id="aboutTtl">ABOUT ME</span></div><div>♡ 좋아하는 것 : </div><div>✕ 싫어하는 것 : </div><div>☆ 요즘 빠진 것 : </div><div>✉ 연락 : </div></div>
+        <div class="divlayer" id="divLayer"></div>
       </div>
     </div>
     <div class="win-foot">
@@ -1111,10 +1111,10 @@ stage.addEventListener('pointerdown', e=>{
 });
 window.addEventListener('pointermove', e=>{
   if(!act) return; const {o} = act; const dx = (e.clientX-act.sx)/scale, dy = (e.clientY-act.sy)/scale;
-  if(act.mode==='move'){ o.style.left = Math.round(act.l+dx)+'px'; o.style.top = Math.round(act.t+dy)+'px'; }
+  if(act.mode==='move'){ o.style.left = Math.round(act.l+dx)+'px'; o.style.top = Math.round(act.t+dy)+'px'; clampDiv(o,'move'); }
   else if(act.mode==='resize'){
     const t = o.dataset.type;
-    if(t==='divider'){ if(o.dataset.orient==='h') o.style.width = Math.max(20, act.w+dx)+'px'; else o.style.height = Math.max(20, act.h+dy)+'px'; }
+    if(t==='divider'){ if(o.dataset.orient==='h') o.style.width = Math.max(20, act.w+dx)+'px'; else o.style.height = Math.max(20, act.h+dy)+'px'; clampDiv(o,'resize'); }
     else if(t==='popup'){ o.style.width = Math.max(140, act.w+dx)+'px'; }
     else { o.style.width = Math.max(24, act.w + Math.max(dx,dy*act.w/act.h))+'px'; }
   } else if(act.mode==='rot'){
@@ -1128,16 +1128,35 @@ document.addEventListener('keydown', e=>{
   if(!sel) return; const ae = document.activeElement; if(ae && (ae.isContentEditable || /INPUT|SELECT|TEXTAREA/.test(ae.tagName))) return;
   if(e.key==='Delete' || e.key==='Backspace'){ e.preventDefault(); sel.remove(); sel=null; save(); return; }
   const step = e.shiftKey?10:1, m = {ArrowLeft:[-step,0],ArrowRight:[step,0],ArrowUp:[0,-step],ArrowDown:[0,step]}[e.key];
-  if(m){ e.preventDefault(); sel.style.left = parseFloat(sel.style.left)+m[0]+'px'; sel.style.top = parseFloat(sel.style.top)+m[1]+'px'; save(); }
+  if(m){ e.preventDefault(); sel.style.left = parseFloat(sel.style.left)+m[0]+'px'; sel.style.top = parseFloat(sel.style.top)+m[1]+'px'; clampDiv(sel,'move'); save(); }
 });
 
 /* 구분선 */
+function syncLayer(){
+  const L = scene.querySelector('#divLayer'), b = scene.querySelector('#box1'); if(!L || !b) return null;
+  L.style.left = b.offsetLeft+'px'; L.style.top = b.offsetTop+'px'; L.style.width = b.offsetWidth+'px'; L.style.height = b.offsetHeight+'px';
+  return L;
+}
+const clampN = (v,a,b)=> Math.min(Math.max(v,a), Math.max(a,b));
+function clampDiv(o, mode){
+  if(!o || o.dataset.type!=='divider') return; const L = o.parentElement; if(!L || L.id!=='divLayer') return;
+  const LW = L.clientWidth, LH = L.clientHeight, hz = o.dataset.orient==='h';
+  let x = parseFloat(o.style.left)||0, y = parseFloat(o.style.top)||0;
+  if(hz){ let w = o.offsetWidth;
+    if(mode==='resize'){ w = clampN(w, 20, LW - x); o.style.width = w+'px'; }
+    else { w = Math.min(w, LW); o.style.width = w+'px'; o.style.left = clampN(x, 0, LW - w)+'px'; o.style.top = clampN(y, -7, LH - 9)+'px'; }
+  } else { let h = o.offsetHeight;
+    if(mode==='resize'){ h = clampN(h, 20, LH - y); o.style.height = h+'px'; }
+    else { h = Math.min(h, LH); o.style.height = h+'px'; o.style.top = clampN(y, 0, LH - h)+'px'; o.style.left = clampN(x, -7, LW - 9)+'px'; }
+  }
+}
 function addDivider(orient){
-  const win = stagePt(scene.querySelector('.main') || stage);
-  const x = orient==='h' ? win.x + 26 : win.x + win.w/2, y = orient==='h' ? win.y + win.h/2 : win.y + 60;
-  const len = orient==='h' ? win.w - 52 : 200;
-  scene.insertAdjacentHTML('beforeend', dividerHTML(Math.round(x), Math.round(y), Math.round(len), orient, $('#divStyle').value, $('#divW').value));
-  select(scene.lastElementChild); save(); setStatus('구분선 추가 — 드래그해서 옮기세요');
+  const L = syncLayer(); if(!L) return;
+  const LW = L.clientWidth, LH = L.clientHeight;
+  const html = orient==='h' ? dividerHTML(0, Math.round(LH/2 - 8), LW, 'h', $('#divStyle').value, $('#divW').value)
+                            : dividerHTML(Math.round(LW/2 - 8), 10, Math.min(160, LH - 20), 'v', $('#divStyle').value, $('#divW').value);
+  L.insertAdjacentHTML('beforeend', html);
+  select(L.lastElementChild); save(); setStatus('구분선 추가 — 글 상자 안에서만 움직여요');
 }
 $('#addH').onclick = ()=> addDivider('h'); $('#addV').onclick = ()=> addDivider('v');
 const selDiv = ()=> sel && sel.dataset.type==='divider' ? sel : null;
@@ -1151,7 +1170,7 @@ $('#popAdd').onclick = ()=>{ scene.insertAdjacentHTML('beforeend', popupHTML($('
 $('#zUp').onclick = ()=>{ if(!sel) return setStatus('개체를 먼저 선택하세요'); sel.style.zIndex = topZ()+1; save(); };
 $('#zDown').onclick = ()=>{ if(!sel) return setStatus('개체를 먼저 선택하세요'); sel.style.zIndex = Math.max(12, Math.min(20, ...objs().map(zOf)) - 1); save(); setStatus('맨 뒤로 (창 뒤쪽)'); };
 $('#dup').onclick = ()=>{ if(!sel) return setStatus('개체를 먼저 선택하세요'); const c = sel.cloneNode(true); c.classList.remove('sel');
-  c.style.left = parseFloat(sel.style.left)+20+'px'; c.style.top = parseFloat(sel.style.top)+20+'px'; c.style.zIndex = topZ()+1; scene.appendChild(c); select(c); save(); };
+  c.style.left = parseFloat(sel.style.left)+20+'px'; c.style.top = parseFloat(sel.style.top)+20+'px'; c.style.zIndex = topZ()+1; sel.parentNode.appendChild(c); clampDiv(c,'move'); select(c); save(); };
 $('#del').onclick = ()=>{ if(!sel) return setStatus('개체를 먼저 선택하세요'); sel.remove(); sel=null; save(); };
 
 /* ---------- 저장(로컬) ---------- */
@@ -1164,9 +1183,10 @@ function save(){ clearTimeout(saveT); saveT = setTimeout(()=>{
 function load(){ try{ const d = JSON.parse(localStorage.getItem(KEY)||'null'); if(d && d.html && d.state){ state = {...state, ...d.state, opts:{...state.opts, ...d.state.opts}}; if(!THEMES[state.theme]){ state.theme='luna'; state.decor={...THEMES.luna.decor}; } scene.innerHTML = d.html; return true; } }catch(e){} return false; }
 function fresh(){
   scene.innerHTML = defaultScene();
-  requestAnimationFrame(()=>{ const b1 = stagePt(scene.querySelector('#box1')), main = stagePt(scene.querySelector('.main'));
-    scene.insertAdjacentHTML('beforeend', dividerHTML(Math.round(main.x+26), Math.round(b1.y+b1.h+5), Math.round(main.w-52), 'h', 'solid', 2));
-    save(); });
+  requestAnimationFrame(()=>{ const L = syncLayer(); const at = scene.querySelector('#aboutTtl');
+    const y = at ? Math.round(stagePt(at).y - stagePt(L).y - 26) : Math.round(L.clientHeight/2);
+    L.insertAdjacentHTML('beforeend', dividerHTML(0, y, L.clientWidth, 'h', 'solid', 2));
+    if(at) at.removeAttribute('id'); save(); });
 }
 $('#resetBtn').onclick = ()=>{ if(!confirm('모든 내용을 지우고 처음 상태로 돌릴까요?')) return;
   state = {theme:state.theme, decor:{...THEMES[state.theme].decor}, opts:{icons:1,task:1,back:0,cursor:1}, wall:'theme', wallImg:null, wallX:50, wallY:50, wallDim:0, uifont:''}; fresh(); applyTheme(state.theme,false); setStatus('초기화 완료'); };
@@ -1195,7 +1215,7 @@ $('#modal').onclick = e=>{ if(e.target.id==='modal') $('#modal').classList.remov
 /* ---------- 시작 ---------- */
 fit();
 const had = load();
-if(!had) fresh();
+if(!had) fresh(); else syncLayer();
 applyTheme(state.theme, false);
 const p = pic(); if(p){ const m = /([\d.]+)% ([\d.]+)%/.exec(p.style.backgroundPosition||''); if(m){ $('#picX').value=m[1]; $('#picY').value=m[2]; } }
 if(document.fonts) document.fonts.ready.then(drawDecor);
