@@ -198,7 +198,8 @@ input[type=range]{flex:1;min-width:80px}
 .xbtn{position:relative;display:inline-flex;align-items:center;justify-content:center;min-width:88px;height:27px;padding:0 12px;
   font:13px var(--uifont,'Tahoma','Pretendard',sans-serif);color:var(--btntext);
   border:1px solid var(--btnbd);border-radius:var(--br);background:var(--btnbg);box-shadow:var(--btnshadow);user-select:none}
-.xbtn.next::before{content:"";position:absolute;left:1px;top:1px;right:1px;bottom:1px;border:2px solid var(--btnfocus);border-radius:var(--br);pointer-events:none}
+.xbtn.next::before{content:"";position:absolute;left:0;top:0;right:0;bottom:0;border:2px solid var(--btnfocus);
+  border-top-color:var(--btnfocusT);border-bottom-color:var(--btnfocusB);border-radius:var(--br);pointer-events:none}
 .xbtn .cur{position:absolute;left:52%;top:13px;width:17px;height:24px;pointer-events:none}
 .btns .back{margin-right:-2px}
 #stage.hide-back .xbtn.back{display:none}
@@ -713,7 +714,7 @@ const BASE = {
   footer:'#ece9d8', foottext:'#333333', footline:'#aca899', footline2:'#ffffff',
   fieldbg:'#ffffff', fieldbd:'#7f9db9', fieldtext:'#111111', fr:'0px',
   btnbg:'linear-gradient(180deg,#ffffff 0%,#f4f3ee 40%,#ecebe6 85%,#d6d0c5 100%)', btnbd:'#003c74', btntext:'#000000',
-  btnshadow:'none', btnfocus:'#8fb4f5', br:'3px', wr:'8px',
+  btnshadow:'none', btnfocus:'#a8c8f8', btnfocusT:'#cee7ff', btnfocusB:'#6982ee', br:'3px', wr:'8px',
   glow:'0 10px 28px rgba(0,0,30,.45)',
   popbody:'#ece9d8', poptext:'#111111',
   task:'linear-gradient(180deg,#3168d5 0%,#4993e6 5%,#2157d7 14%,#2663e0 84%,#1941a5 100%)',
@@ -752,7 +753,7 @@ const THEMES = {
       phbg:'rgba(79,240,255,.08)', picbd:'#4ff0ff',
       footer:'#0d1438', foottext:'#8fb7d9', footline:'#2b3d9b', footline2:'#1a2560',
       fieldbg:'#050a22', fieldbd:'#2f59c9', fieldtext:'#dff6ff',
-      btnbg:'linear-gradient(180deg,#22348a,#0c1440)', btnbd:'#4ff0ff', btntext:'#dff6ff', btnfocus:'rgba(79,240,255,.45)',
+      btnbg:'linear-gradient(180deg,#22348a,#0c1440)', btnbd:'#4ff0ff', btntext:'#dff6ff', btnfocus:'rgba(79,240,255,.35)', btnfocusT:'rgba(79,240,255,.5)', btnfocusB:'rgba(79,240,255,.2)',
       glow:'0 0 0 1px rgba(79,240,255,.5), 0 0 30px rgba(79,240,255,.45), 0 12px 30px rgba(0,0,0,.6)',
       popbody:'#0d1438', poptext:'#dff6ff',
       task:'linear-gradient(180deg,#1b2768 0%,#2a3a96 6%,#0f1850 16%,#0b1240 100%)', taskitem:'linear-gradient(180deg,#14206a,#22349a)',
@@ -778,7 +779,7 @@ const THEMES = {
       body:'#f4fdff', text:'#04223a', sub:'#2a6a92', titlecolor:'#021a30', accent:'#0090ff',
       side:'linear-gradient(160deg,#00e4ff 0%,#0a4fbf 45%,#00142e 100%)', sidearc:'rgba(0,240,255,.55)', sideshadow:'0 0 6px rgba(0,0,0,.6)',
       phbg:'rgba(0,240,255,.12)', picbd:'#00f0ff',
-      footer:'#e3f6fd', footline:'#94cfe6', fieldbd:'#00a8ff', btnbd:'#0070d0', btnfocus:'#7fe6ff',
+      footer:'#e3f6fd', footline:'#94cfe6', fieldbd:'#00a8ff', btnbd:'#0070d0', btnfocus:'#9fe8ff', btnfocusT:'#d2f6ff', btnfocusB:'#3aa8f0',
       glow:'0 0 0 1px #9ff6ff, 0 0 26px rgba(0,210,255,.75), 0 12px 30px rgba(0,20,60,.5)',
       popbody:'#eafaff'},
     wall:DAY,
