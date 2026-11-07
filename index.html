@@ -8,12 +8,11 @@
 <!-- 폰트: 프리텐다드 / 페이퍼로지 / 도트(갈무리11) / 명조(나눔명조) -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/galmuri@latest/dist/galmuri.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/neodgm/neodgm-pro-webfont@latest/neodgm_pro/style.css">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700;800&display=swap">
 <style>
-@font-face{font-family:'DungGeunMo';font-weight:400;font-style:normal;font-display:swap;
-  src:url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_six@1.2/DungGeunMo.woff') format('woff');size-adjust:122%;}
 /* 갈무리: 크기를 살짝 줄인 버전 */
 @font-face{font-family:'GalmuriDot';font-weight:400;font-style:normal;font-display:swap;size-adjust:88%;
   src:url('https://cdn.jsdelivr.net/npm/galmuri@latest/dist/Galmuri11.woff2') format('woff2');}
@@ -320,9 +319,10 @@ input[type=range]{flex:1;min-width:80px}
             <select id="fontSel">
               <option value="Pretendard">프리텐다드</option>
               <option value="Paperlogy">페이퍼로지</option>
-              <option value="GalmuriDot">도트 (갈무리)</option>
-              <option value="Nanum Myeongjo">명조 (나눔명조)</option>
-              <option value="DungGeunMo">둥근모 (옛날 윈도우 PC)</option>
+              <option value="GalmuriDot">갈무리11</option>
+              <option value="Galmuri14">갈무리14</option>
+              <option value="NeoDunggeunmo Pro">Neo둥근모 Pro</option>
+              <option value="Nanum Myeongjo">나눔명조</option>
             </select>
             <button class="b" id="fontAll" title="화면의 모든 글자에 적용">전체 적용</button>
           </div>
@@ -1159,7 +1159,7 @@ function cmd(name, val){ if(!restore()) { setStatus('먼저 편집할 글자를 
 document.querySelectorAll('[data-cmd]').forEach(b=> b.onclick = ()=> cmd(b.dataset.cmd));
 $('#colorApply').onclick = ()=> cmd('foreColor', $('#colorIn').value);
 
-const FONT_STACK = {'Pretendard':"'Pretendard',sans-serif", 'Paperlogy':"'Paperlogy','Pretendard',sans-serif", 'GalmuriDot':"'GalmuriDot','Galmuri11','Pretendard',monospace", 'Nanum Myeongjo':"'Nanum Myeongjo',serif", 'DungGeunMo':"'DungGeunMo','Galmuri11','Pretendard',monospace"};
+const FONT_STACK = {'Pretendard':"'Pretendard',sans-serif", 'Paperlogy':"'Paperlogy','Pretendard',sans-serif", 'GalmuriDot':"'GalmuriDot','Galmuri11','Pretendard',monospace", 'Nanum Myeongjo':"'Nanum Myeongjo',serif", 'NeoDunggeunmo Pro':"'NeoDunggeunmo Pro','Galmuri11','Pretendard',monospace", 'Galmuri14':"'Galmuri14','Galmuri11','Pretendard',monospace"};
 $('#fontSel').onchange = e=>{
   const f = e.target.value;
   if(!restore()){ setStatus('글 상자를 먼저 클릭하세요 (또는 [전체 적용])'); return; }
