@@ -198,7 +198,7 @@ input[type=range]{flex:1;min-width:80px}
 .xbtn{position:relative;display:inline-flex;align-items:center;justify-content:center;min-width:88px;height:27px;padding:0 12px;
   font:13px var(--uifont,'Tahoma','Pretendard',sans-serif);color:var(--btntext);
   border:1px solid var(--btnbd);border-radius:var(--br);background:var(--btnbg);box-shadow:var(--btnshadow);user-select:none}
-.xbtn.next{box-shadow:var(--btnshadow), inset 0 0 0 2px var(--btnfocus)}
+.xbtn.next::before{content:"";position:absolute;left:1px;top:1px;right:1px;bottom:1px;border:2px solid var(--btnfocus);border-radius:var(--br);pointer-events:none}
 .xbtn .cur{position:absolute;left:52%;top:13px;width:17px;height:24px;pointer-events:none}
 .btns .back{margin-right:-2px}
 #stage.hide-back .xbtn.back{display:none}
@@ -338,6 +338,9 @@ input[type=range]{flex:1;min-width:80px}
             <button class="b ico" data-cmd="justifyCenter" title="가운데 정렬">≡</button>
             <input type="color" id="colorIn" value="#e2357f" title="글자 색">
             <button class="b" id="colorApply">색 적용</button>
+            <button class="b" id="colorReset">시안 색으로 통일</button>
+            <button class="b" id="colorTheme" title="시안 강조색 (시안을 바꾸면 같이 바뀜)">시안 색</button>
+            <button class="b" id="colorClear" title="글자 색 지우기">기본 색</button>
           </div>
           <div class="row">
             <label class="t">글자 크기</label>
@@ -710,7 +713,7 @@ const BASE = {
   footer:'#ece9d8', foottext:'#333333', footline:'#aca899', footline2:'#ffffff',
   fieldbg:'#ffffff', fieldbd:'#7f9db9', fieldtext:'#111111', fr:'0px',
   btnbg:'linear-gradient(180deg,#ffffff 0%,#f4f3ee 40%,#ecebe6 85%,#d6d0c5 100%)', btnbd:'#003c74', btntext:'#000000',
-  btnshadow:'inset 0 -1px 0 rgba(0,0,0,.08)', btnfocus:'#8fb4f5', br:'3px', wr:'8px',
+  btnshadow:'none', btnfocus:'#8fb4f5', br:'3px', wr:'8px',
   glow:'0 10px 28px rgba(0,0,30,.45)',
   popbody:'#ece9d8', poptext:'#111111',
   task:'linear-gradient(180deg,#3168d5 0%,#4993e6 5%,#2157d7 14%,#2663e0 84%,#1941a5 100%)',
@@ -1092,10 +1095,23 @@ function stagePt(el){ const s = stage.getBoundingClientRect(), r = el.getBoundin
   return {x:(r.left-s.left)/scale, y:(r.top-s.top)/scale, w:r.width/scale, h:r.height/scale}; }
 
 /* ---------- 테마 적용 ---------- */
+function rgbOf(c){ const d = document.createElement('div'); d.style.color = c; document.body.appendChild(d); const v = getComputedStyle(d).color; d.remove(); return v; }
+// 글 상자 안에 박힌 글자 색을 지움 (list가 있으면 그 색들만)
+function clearColors(list){
+  let n = 0;
+  scene.querySelectorAll('[contenteditable="true"], [contenteditable="true"] *').forEach(el=>{
+    if(el.tagName==='FONT' && el.hasAttribute('color') && (!list || list.includes(rgbOf(el.getAttribute('color'))))){ el.removeAttribute('color'); n++; }
+    if(el.style && el.style.color && (!list || list.includes(rgbOf(el.style.color)))){ el.style.color = ''; n++; if(!el.getAttribute('style')) el.removeAttribute('style'); }
+  });
+  return n;
+}
 function applyTheme(id, resetDecor){
+  const cs = getComputedStyle(stage);
+  const oldCols = ['--text','--titlecolor','--sub','--fieldtext','--poptext'].map(v=> cs.getPropertyValue(v).trim()).filter(Boolean).map(rgbOf);
   state.theme = id; const T = THEMES[id];
   const css = {...BASE, ...T.css};
   for(const k in css) stage.style.setProperty('--'+k, css[k]);
+  if(oldCols.length) clearColors(oldCols);
   if(resetDecor) state.decor = {...T.decor};
   syncUI(); drawWall(); drawDecor();
   document.querySelectorAll('.th').forEach(b=>b.classList.toggle('on', b.dataset.id===id));
@@ -1161,6 +1177,20 @@ function cmd(name, val){ if(!restore()) { setStatus('먼저 편집할 글자를 
   document.execCommand('styleWithCSS', false, true); document.execCommand(name, false, val); markPixelBold(); save(); }
 document.querySelectorAll('[data-cmd]').forEach(b=> b.onclick = ()=> cmd(b.dataset.cmd));
 $('#colorApply').onclick = ()=> cmd('foreColor', $('#colorIn').value);
+$('#colorReset').onclick = ()=>{ const n = clearColors(null); save(); setStatus(n ? `글자 ${n}곳의 색을 시안 색으로 통일했어요` : '이미 모두 시안 색이에요'); };
+// 시안 색: 임시 색으로 칠한 뒤 var(--accent)로 바꿔서, 시안을 바꾸면 글자 색도 함께 바뀌게 함
+function markColor(fn){
+  if(!restore()){ setStatus('색을 바꿀 글자를 드래그해서 선택하세요'); return; }
+  if(getSelection().getRangeAt(0).collapsed){ setStatus('색을 바꿀 글자를 드래그해서 선택하세요'); return; }
+  document.execCommand('styleWithCSS', false, true); document.execCommand('foreColor', false, '#010203');
+  lastBox.querySelectorAll('[style*="color"], font[color]').forEach(el=>{
+    const c = el.style.color.replace(/\s/g,''), fc = (el.getAttribute('color')||'').toLowerCase();
+    if(c==='rgb(1,2,3)' || fc==='#010203'){ el.removeAttribute('color'); fn(el); if(!el.getAttribute('style')) el.removeAttribute('style'); }
+  });
+  save();
+}
+$('#colorTheme').onclick = ()=>{ markColor(el=> el.style.color = 'var(--accent)'); setStatus('시안 색 적용 — 시안을 바꾸면 같이 바뀌어요'); };
+$('#colorClear').onclick = ()=>{ markColor(el=>{ el.style.removeProperty('color'); el.querySelectorAll('[style*="color"]').forEach(x=> x.style.removeProperty('color')); }); setStatus('글자 색을 기본으로 되돌렸어요'); };
 
 const FONT_STACK = {'Pretendard':"'Pretendard',sans-serif", 'Paperlogy':"'Paperlogy','Pretendard',sans-serif", 'GalmuriDot':"'GalmuriDot','Galmuri11','Pretendard',monospace", 'Nanum Myeongjo':"'Nanum Myeongjo',serif", 'NeoDunggeunmo Pro':"'NeoDunggeunmo Pro','Galmuri11','Pretendard',monospace", 'Galmuri14':"'Galmuri14','Galmuri11','Pretendard',monospace"};
 $('#fontSel').onchange = e=>{
