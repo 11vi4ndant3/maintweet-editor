@@ -13,10 +13,10 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700;800&display=swap">
 <style>
-/* 갈무리: 크기를 살짝 줄인 버전 */
-@font-face{font-family:'GalmuriDot';font-weight:400;font-style:normal;font-display:swap;size-adjust:88%;
+/* 갈무리11 (12px에서 가장 선명) */
+@font-face{font-family:'GalmuriDot';font-weight:400;font-style:normal;font-display:swap;
   src:url('https://cdn.jsdelivr.net/npm/galmuri@latest/dist/Galmuri11.woff2') format('woff2');}
-@font-face{font-family:'GalmuriDot';font-weight:700;font-style:normal;font-display:swap;size-adjust:88%;
+@font-face{font-family:'GalmuriDot';font-weight:700;font-style:normal;font-display:swap;
   src:url('https://cdn.jsdelivr.net/npm/galmuri@latest/dist/Galmuri11-Bold.woff2') format('woff2');}
 @font-face{font-family:'Paperlogy';font-weight:400;font-style:normal;font-display:swap;
   src:url('https://cdn.jsdelivr.net/gh/projectnoonnu/2408-3@1.0/Paperlogy-4Regular.woff2') format('woff2');}
@@ -182,6 +182,8 @@ input[type=range]{flex:1;min-width:80px}
 .ttl.s-xs{font-size:1.05em}
 .ttl.s-s{font-size:1.2em}
 .ttl.s-l{font-size:1.8em}
+/* Neo둥근모 Pro는 굵은체 파일이 없어서, 번지는 가짜 굵기 대신 1px 겹쳐 찍는 도트식 굵기 사용 */
+#stage .pxb{font-weight:400!important;font-synthesis:none;text-shadow:1px 0 0 currentColor}
 .bx{display:inline-block;line-height:1.35;margin:1px 0}
 .ttl.b-square,.ttl.b-round,.ttl.b-fsquare,.ttl.b-fround,.bx.b-square,.bx.b-round,.bx.b-fsquare,.bx.b-fround{margin:.15em .25em .4em 0}
 .ttl.b-square,.bx.b-square{border:2px solid var(--accent);padding:.08em .45em}
@@ -1108,7 +1110,7 @@ function syncUI(){
   document.querySelectorAll('#decoChecks input').forEach(i=> i.checked = !!state.decor[i.dataset.k]);
   document.querySelectorAll('#optChecks input').forEach(i=> i.checked = !!state.opts[i.dataset.k]);
   $('#decoColor').value = state.decor.color;
-  applyUiFont(); $('#iconStyle').value = state.iconStyle || 'pixel'; applyIconStyle();
+  applyUiFont(); markPixelBold(); $('#iconStyle').value = state.iconStyle || 'pixel'; applyIconStyle();
   $('#wallX').value = state.wallX; $('#wallY').value = state.wallY; $('#wallDim').value = state.wallDim;
   applyOpts();
 }
@@ -1155,7 +1157,7 @@ function restore(){
 }
 document.querySelectorAll('.panel-col button, .panel-col .th').forEach(b=> b.addEventListener('mousedown', e=> e.preventDefault()));
 function cmd(name, val){ if(!restore()) { setStatus('먼저 편집할 글자를 클릭하거나 드래그하세요'); return; }
-  document.execCommand('styleWithCSS', false, true); document.execCommand(name, false, val); save(); }
+  document.execCommand('styleWithCSS', false, true); document.execCommand(name, false, val); markPixelBold(); save(); }
 document.querySelectorAll('[data-cmd]').forEach(b=> b.onclick = ()=> cmd(b.dataset.cmd));
 $('#colorApply').onclick = ()=> cmd('foreColor', $('#colorIn').value);
 
@@ -1450,8 +1452,13 @@ $('#dup').onclick = ()=>{ if(!sel) return setStatus('개체를 먼저 선택하�
 $('#del').onclick = ()=>{ if(!sel) return setStatus('개체를 먼저 선택하세요'); sel.remove(); sel=null; save(); };
 
 /* ---------- 저장(로컬) ---------- */
+const BOLD_SEL = 'b,strong,.ttl,[style*="font-weight: bold"],[style*="font-weight: 700"],[style*="font-weight:bold"],.lbl,.tb-title,.pt,.startbtn span,.idrow .lbl';
+function markPixelBold(){
+  scene.querySelectorAll(BOLD_SEL).forEach(el=>{ const f = (getComputedStyle(el).fontFamily.split(',')[0]||'').replace(/["']/g,'').trim();
+    el.classList.toggle('pxb', f==='NeoDunggeunmo Pro'); });
+}
 let saveT = null;
-function save(){ clearTimeout(saveT); saveT = setTimeout(()=>{
+function save(){ clearTimeout(saveT); saveT = setTimeout(()=>{ markPixelBold();
   try{ const cl = scene.cloneNode(true); cl.querySelectorAll('.sel,.hsel').forEach(e=>e.classList.remove('sel','hsel'));
     localStorage.setItem(KEY, JSON.stringify({v:1, state, html:cl.innerHTML})); }
   catch(err){ setStatus('⚠ 자동 저장 용량 초과 — 새로고침하면 사진이 사라질 수 있어요'); }
@@ -1498,7 +1505,7 @@ const p = pic(); if(p){
   if(bg){ const t = new Image(); t.onload = ()=>{ setPicImage(bg[1], t.naturalWidth, t.naturalHeight); p.style.backgroundSize=''; p.style.backgroundPosition=''; save(); }; t.src = bg[1]; }
   else layoutPic();
 }
-if(document.fonts) document.fonts.ready.then(drawDecor);
+if(document.fonts) document.fonts.ready.then(()=>{ drawDecor(); markPixelBold(); });
 setStatus(had ? '이전 작업을 불러왔어요' : '준비됨 — 글자를 클릭해서 편집하세요');
 })();
 </script>
