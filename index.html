@@ -1,0 +1,1136 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PROFILE SETUP WIZARD · 자기소개 메이커</title>
+
+<!-- 폰트: 프리텐다드 / 페이퍼로지 / 도트(갈무리11) / 명조(나눔명조) -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/galmuri@latest/dist/galmuri.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700;800&display=swap">
+<style>
+@font-face{font-family:'Paperlogy';font-weight:400;font-style:normal;font-display:swap;
+  src:url('https://cdn.jsdelivr.net/gh/projectnoonnu/2408-3@1.0/Paperlogy-4Regular.woff2') format('woff2');}
+@font-face{font-family:'Paperlogy';font-weight:700;font-style:normal;font-display:swap;
+  src:url('https://cdn.jsdelivr.net/gh/projectnoonnu/2408-3@1.0/Paperlogy-7Bold.woff2') format('woff2');}
+@font-face{font-family:'Paperlogy';font-weight:800;font-style:normal;font-display:swap;
+  src:url('https://cdn.jsdelivr.net/gh/projectnoonnu/2408-3@1.0/Paperlogy-8ExtraBold.woff2') format('woff2');}
+
+*{box-sizing:border-box}
+html,body{margin:0}
+body{
+  font-family:'Pretendard','Tahoma',sans-serif;
+  background:#2c5bc7 linear-gradient(180deg,#3a6fe0 0%,#2350bd 100%);
+  min-height:100vh;color:#000;
+}
+
+/* ================= 페이지(에디터) 크롬 ================= */
+.app{max-width:1600px;margin:0 auto;padding:18px;display:flex;gap:18px;align-items:flex-start}
+.stage-col{flex:1;min-width:0}
+.panel-col{width:340px;flex:none;position:sticky;top:12px;max-height:calc(100vh - 24px);display:flex;flex-direction:column}
+@media (max-width:1050px){
+  .app{flex-direction:column;padding:10px}
+  .panel-col{width:100%;position:static;max-height:none}
+}
+
+.pagehead{display:flex;align-items:center;gap:10px;color:#fff;margin:0 0 12px;
+  font:700 15px 'Trebuchet MS','Pretendard',sans-serif;text-shadow:1px 1px 0 #0d2a7a}
+.pagehead small{font-weight:400;opacity:.85;font-size:12px}
+.pagehead .dot{width:12px;height:12px;border-radius:50%;background:#7CFC9A;box-shadow:0 0 8px #7CFC9A}
+
+#stageWrap{position:relative;overflow:hidden;border-radius:6px;box-shadow:0 10px 40px rgba(0,0,30,.45)}
+
+/* XP 패널 창 */
+.xpwin{background:#ece9d8;border:3px solid #0831d9;border-radius:8px 8px 4px 4px;overflow:hidden;display:flex;flex-direction:column;min-height:0;
+  box-shadow:0 8px 30px rgba(0,0,40,.4)}
+.xpwin>.tb{height:28px;flex:none;display:flex;align-items:center;gap:6px;padding:0 6px;color:#fff;
+  font:700 13px 'Trebuchet MS','Pretendard',sans-serif;text-shadow:1px 1px 0 #0f1089;
+  background:linear-gradient(180deg,#0997ff 0%,#0053ee 8%,#0050ee 40%,#06f 88%,#06f 93%,#005bff 95%,#003dd7 96%,#003dd7 100%)}
+.xpwin>.tb .sp{flex:1}
+.xpwin .scroll{overflow:auto;padding:10px;min-height:0}
+.xpwin .status{flex:none;border-top:1px solid #aca899;padding:5px 8px;font-size:12px;color:#333;background:#ece9d8;
+  box-shadow:inset 0 1px 0 #fff;min-height:26px}
+
+fieldset{border:1px solid #d0d0bf;border-radius:4px;margin:0 0 10px;padding:8px 9px 10px;background:#f6f5ee}
+legend{color:#0046d5;font-size:12.5px;font-weight:700;padding:0 4px}
+.row{display:flex;flex-wrap:wrap;gap:5px;align-items:center;margin:4px 0}
+.row label.t{font-size:12px;color:#333;min-width:56px}
+.hint{font-size:11.5px;color:#666;line-height:1.45;margin:4px 0 0}
+
+.b{appearance:none;font:500 12.5px 'Pretendard',sans-serif;color:#000;cursor:pointer;
+  min-height:26px;padding:3px 10px;border:1px solid #003c74;border-radius:3px;
+  background:linear-gradient(180deg,#fff 0%,#f4f3ee 40%,#ecebe6 85%,#d6d0c5 100%);
+  box-shadow:inset 0 -1px 0 rgba(0,0,0,.06)}
+.b:hover{box-shadow:inset 0 0 0 2px #f9c86a}
+.b:active{background:linear-gradient(180deg,#e3e2da,#f0efe9)}
+.b.on{background:linear-gradient(180deg,#cfe0ff,#9fc0f5);box-shadow:inset 0 0 0 1px #3b6fd8}
+.b.ico{min-width:30px;padding:3px 6px;font-weight:800}
+.b.primary{font-weight:700;box-shadow:inset 0 0 0 1px #6b9cf0, inset 0 0 0 2px #c8dafc}
+.b.big{min-height:34px;font-size:14px;width:100%}
+select,input[type=text]{font:12.5px 'Pretendard',sans-serif;min-height:26px;border:1px solid #7f9db9;background:#fff;border-radius:2px;padding:2px 4px}
+input[type=color]{width:34px;height:26px;padding:0 2px;border:1px solid #7f9db9;background:#fff;border-radius:2px}
+input[type=range]{flex:1;min-width:80px}
+.chk{display:flex;align-items:center;gap:4px;font-size:12px;width:calc(50% - 3px)}
+
+/* 시안 그리드 */
+.themes{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.th{cursor:pointer;border:1px solid #7f9db9;border-radius:4px;background:#fff;padding:3px;font-size:10.5px;text-align:center;line-height:1.2}
+.th .sw{height:34px;border-radius:3px 3px 2px 2px;overflow:hidden;display:flex;flex-direction:column;margin-bottom:3px;border:1px solid rgba(0,0,0,.15)}
+.th .sw i{height:9px;display:block}
+.th .sw span{flex:1;display:flex}
+.th .sw b{width:40%;display:block}
+.th .sw em{flex:1;display:block}
+.th.on{border-color:#0046d5;box-shadow:0 0 0 2px #7fb0ff}
+
+/* 저장 모달 */
+#modal{position:fixed;inset:0;background:rgba(0,10,40,.55);display:none;align-items:center;justify-content:center;z-index:9999;padding:14px}
+#modal.show{display:flex}
+#modal .xpwin{max-width:min(900px,96vw);max-height:92vh}
+#modal img{max-width:100%;display:block;border:1px solid #999;margin:0 auto}
+#modal .scroll{text-align:center}
+
+/* ================= 스테이지 (PNG로 저장되는 영역) ================= */
+#stage{position:relative;width:1200px;height:800px;overflow:hidden;transform-origin:0 0;
+  font-family:'Pretendard',sans-serif;color:var(--text);
+  --inv:1;
+}
+#stage canvas.layer{position:absolute;left:0;top:0;width:1200px;height:800px;pointer-events:none}
+#wallCv{z-index:1}
+#decoCv{z-index:10}
+#scene{position:absolute;inset:0;z-index:11}
+
+[contenteditable="true"]{outline:none;cursor:text}
+[contenteditable="true"]:focus{box-shadow:0 0 0 1px rgba(80,150,255,.55)}
+#stage.exporting [contenteditable="true"]:focus{box-shadow:none}
+
+/* 바탕화면 아이콘 */
+.desk-icons{position:absolute;left:14px;top:14px;z-index:15;display:flex;flex-direction:column;gap:14px;width:86px}
+.dicon{display:flex;flex-direction:column;align-items:center;gap:3px;text-align:center}
+.dicon img{width:40px;height:40px;display:block}
+.dicon span{color:#fff;font:12px 'Tahoma','Pretendard',sans-serif;line-height:1.2;text-shadow:1px 1px 1px #000,0 0 2px #000;padding:1px 3px;min-width:20px}
+#stage.hide-icons .desk-icons{display:none}
+
+/* 메인 창 */
+.win{position:absolute;left:160px;top:76px;width:880px;height:584px;z-index:50;
+  border:3px solid var(--frame);border-top:0;border-radius:var(--wr) var(--wr) 3px 3px;
+  background:var(--body);display:flex;flex-direction:column;
+  box-shadow:var(--glow);
+}
+.win-tb{height:30px;flex:none;display:flex;align-items:center;gap:6px;padding:0 5px 0 7px;
+  background:var(--tb);border-radius:var(--wr) var(--wr) 0 0;margin:0 -3px;border:1px solid var(--frame);border-bottom:0}
+.tb-ico{width:17px;height:17px;flex:none}
+.tb-title{color:var(--tbtext);font:700 13.5px 'Trebuchet MS','Pretendard',sans-serif;text-shadow:var(--tbshadow);white-space:nowrap;padding:0 2px}
+.tb-btns{margin-left:auto;display:flex;gap:2px}
+.tbb{width:22px;height:22px;border-radius:3px;border:1px solid var(--tbbbd);background:var(--tbb);position:relative;display:block}
+.tbb.min::after{content:"";position:absolute;left:5px;bottom:5px;width:8px;height:3px;background:var(--tbbglyph)}
+.tbb.max::after{content:"";position:absolute;left:4px;top:4px;width:10px;height:10px;border:1px solid var(--tbbglyph);border-top-width:3px;box-sizing:border-box}
+.tbb.close{background:var(--tbclose)}
+.tbb.close::before,.tbb.close::after{content:"";position:absolute;left:4.5px;top:9.5px;width:12px;height:2px;background:#fff;transform:rotate(45deg)}
+.tbb.close::after{transform:rotate(-45deg)}
+
+.win-content{flex:1;display:flex;min-height:0}
+.side{width:300px;border-right:1px solid var(--footline);flex:none;position:relative;overflow:hidden;background:var(--side);color:var(--sidetext)}
+.side-deco{position:absolute;inset:0;pointer-events:none}
+.side-deco i{position:absolute;border-radius:50%;border:1px solid var(--sidearc);display:block}
+.side-deco .a1{width:520px;height:520px;left:-170px;top:150px}
+.side-deco .a2{width:380px;height:380px;left:-110px;top:230px;border-width:22px;opacity:.35}
+.side-deco .a3{width:220px;height:220px;left:170px;top:300px;border-width:2px;border-style:dashed}
+.pic{position:absolute;inset:0;cursor:pointer;
+  background-color:transparent;background-size:cover;background-position:50% 50%;background-repeat:no-repeat}
+.pic .ph{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;
+  color:var(--sidetext);font-size:13px;text-align:center;line-height:1.4;opacity:.9}
+.pic .ph span{font-size:30px;line-height:1;font-weight:200}
+.pic .ph small{opacity:.75;font-size:11px}
+.pic.has .ph{display:none}
+#stage.exporting .pic .ph{display:none}
+.caption{display:none;position:relative;margin:12px 20px 0;font-size:12px;line-height:1.5;min-height:20px;max-height:66px;overflow:hidden;
+  text-shadow:var(--sideshadow)}
+
+.main{flex:1;min-width:0;display:flex;flex-direction:column;padding:20px 26px 14px 26px;color:var(--text)}
+.idrow{display:flex;align-items:center;gap:8px;flex:none;margin-bottom:14px}
+.idrow .lbl{font:700 12px 'Tahoma','Pretendard',sans-serif;color:var(--sub);white-space:nowrap}
+.idrow .field{flex:1;min-width:0;height:26px;line-height:24px;padding:0 7px;font-size:13.5px;white-space:nowrap;overflow:hidden;
+  background:var(--fieldbg);border:1px solid var(--fieldbd);color:var(--fieldtext);border-radius:var(--fr)}
+.idrow .field.idf{flex:.8}
+.tbox{flex:1 1 0;min-height:0;overflow:hidden;font-size:14px;line-height:1.6;word-break:keep-all;overflow-wrap:anywhere;padding:2px}
+.tgap{height:26px;flex:none}
+
+.ttl{display:inline-block;font-weight:800;font-size:1.6em;line-height:1.25;color:var(--titlecolor);margin:1px 0;letter-spacing:-.01em}
+.ttl.s-s{font-size:1.2em}
+.ttl.s-l{font-size:2.05em}
+.ttl.b-square{border:2px solid var(--accent);padding:.08em .45em}
+.ttl.b-round{border:2px solid var(--accent);padding:.08em .6em;border-radius:.75em}
+.ttl.b-fsquare{background:var(--accent);color:var(--onaccent);padding:.1em .45em}
+.ttl.b-fround{background:var(--accent);color:var(--onaccent);padding:.1em .6em;border-radius:.75em}
+
+.win-foot{height:60px;flex:none;display:flex;align-items:center;gap:10px;padding:0 14px 0 16px;background:var(--footer);
+  border-top:1px solid var(--footline);box-shadow:inset 0 1px 0 var(--footline2)}
+.foot-note{font:11px 'Tahoma','Pretendard',sans-serif;color:var(--foottext);opacity:.8;white-space:nowrap}
+.btns{margin-left:auto;display:flex;gap:8px;align-items:center}
+.xbtn{position:relative;display:inline-flex;align-items:center;justify-content:center;min-width:88px;height:27px;padding:0 12px;
+  font:13px 'Tahoma','Pretendard',sans-serif;color:var(--btntext);
+  border:1px solid var(--btnbd);border-radius:var(--br);background:var(--btnbg);box-shadow:var(--btnshadow);user-select:none}
+.xbtn.next{box-shadow:var(--btnshadow), inset 0 0 0 2px var(--btnfocus)}
+.xbtn .cur{position:absolute;left:52%;top:13px;width:17px;height:24px;pointer-events:none}
+.btns .back{margin-right:-2px}
+#stage.hide-back .xbtn.back{display:none}
+#stage.hide-cursor .xbtn .cur{display:none}
+
+/* 작업 표시줄 */
+.taskbar{position:absolute;left:0;right:0;bottom:0;height:36px;z-index:80;display:flex;align-items:center;background:var(--task)}
+.startbtn{height:36px;padding:0 22px 0 10px;display:flex;align-items:center;gap:6px;border-radius:0 15px 15px 0;
+  background:var(--start);box-shadow:inset -2px 0 3px rgba(0,0,0,.25), 2px 0 4px rgba(0,0,0,.25)}
+.startbtn img{width:20px;height:20px}
+.startbtn span{color:var(--starttext);font:italic 700 19px 'Trebuchet MS','Pretendard',sans-serif;text-shadow:1px 1px 1px rgba(0,0,0,.5);padding-right:2px}
+.taskitem{margin-left:12px;height:27px;width:200px;display:flex;align-items:center;gap:6px;padding:0 8px;border-radius:3px;
+  background:var(--taskitem);border:1px solid rgba(0,0,0,.25);box-shadow:inset 1px 1px 2px rgba(0,0,0,.35);overflow:hidden}
+.taskitem img{width:15px;height:15px;flex:none}
+.taskitem span{color:var(--tasktext);font:12px 'Tahoma','Pretendard',sans-serif;white-space:nowrap;overflow:hidden}
+.tray{margin-left:auto;height:36px;display:flex;align-items:center;gap:7px;padding:0 12px 0 12px;background:var(--tray);
+  border-left:1px solid rgba(0,0,0,.25);box-shadow:inset 1px 0 0 rgba(255,255,255,.25)}
+.tray i{width:14px;height:14px;border-radius:50%;display:block}
+.tray span{color:var(--traytext);font:12px 'Tahoma','Pretendard',sans-serif;white-space:nowrap;padding-left:4px}
+#stage.hide-task .taskbar{display:none}
+
+/* ===== 개체(스티커/구분선/팝업) ===== */
+.obj{position:absolute}
+.obj.sel{outline:1.5px dashed #2f7bff;outline-offset:2px}
+.h{display:none;position:absolute;z-index:5;width:calc(14px*var(--inv));height:calc(14px*var(--inv));background:#fff;border:1.5px solid #1a6bff;border-radius:3px;touch-action:none}
+.obj.sel .h{display:block}
+.h-del{background:#e0331f;border-color:#fff;border-radius:50%;width:calc(20px*var(--inv));height:calc(20px*var(--inv));
+  top:calc(-12px*var(--inv));right:calc(-12px*var(--inv));cursor:pointer;box-shadow:0 1px 3px rgba(0,0,0,.4)}
+.h-del::before,.h-del::after{content:"";position:absolute;left:20%;top:45%;width:60%;height:10%;background:#fff;transform:rotate(45deg)}
+.h-del::after{transform:rotate(-45deg)}
+.h-resize{right:calc(-8px*var(--inv));bottom:calc(-8px*var(--inv));cursor:nwse-resize}
+.h-rot{left:50%;top:calc(-34px*var(--inv));margin-left:calc(-7px*var(--inv));border-radius:50%;cursor:grab;background:#cfe0ff}
+#stage.exporting .h{display:none!important}
+#stage.exporting .obj.sel{outline:none}
+
+.sticker{cursor:move;touch-action:none;line-height:0}
+.sticker img{width:100%;height:auto;display:block;pointer-events:none;user-select:none;-webkit-user-drag:none}
+
+.divider{cursor:move;touch-action:none;z-index:60;--dc:var(--accent);--dw:2px}
+.divider[data-orient="h"]{height:16px}
+.divider[data-orient="v"]{width:16px}
+.divider .line{position:absolute;display:block}
+.divider[data-orient="h"] .line{left:0;right:0;top:7px;height:0;border-top:var(--dw) solid var(--dc)}
+.divider[data-orient="v"] .line{top:0;bottom:0;left:7px;width:0;border-left:var(--dw) solid var(--dc)}
+.divider[data-style="dashed"] .line{border-top-style:dashed;border-left-style:dashed}
+.divider[data-style="dotted"] .line{border-top-style:dotted;border-left-style:dotted}
+.divider[data-orient="h"][data-style="double"] .line{top:5px;height:calc(var(--dw)*3);border-top:var(--dw) solid var(--dc);border-bottom:var(--dw) solid var(--dc)}
+.divider[data-orient="v"][data-style="double"] .line{left:5px;width:calc(var(--dw)*3);border-left:var(--dw) solid var(--dc);border-right:var(--dw) solid var(--dc)}
+.divider[data-orient="h"][data-style="fade"] .line{border:0;height:var(--dw);background:linear-gradient(90deg,rgba(0,0,0,0),var(--dc) 50%,rgba(0,0,0,0))}
+.divider[data-orient="v"][data-style="fade"] .line{border:0;width:var(--dw);background:linear-gradient(180deg,rgba(0,0,0,0),var(--dc) 50%,rgba(0,0,0,0))}
+.divider[data-orient="h"][data-style="glow"] .line{border:0;height:var(--dw);background:var(--dc);box-shadow:0 0 6px var(--dc),0 0 14px var(--dc)}
+.divider[data-orient="v"][data-style="glow"] .line{border:0;width:var(--dw);background:var(--dc);box-shadow:0 0 6px var(--dc),0 0 14px var(--dc)}
+.divider[data-orient="h"][data-style="etched"] .line{border-top:1px solid var(--footline);border-bottom:1px solid #fff;height:2px}
+.divider[data-orient="v"][data-style="etched"] .line{border-left:1px solid var(--footline);border-right:1px solid #fff;width:2px}
+.divider[data-orient="h"] .h-resize{right:calc(-8px*var(--inv));top:1px;bottom:auto}
+.divider[data-orient="v"] .h-resize{bottom:calc(-8px*var(--inv));left:1px;right:auto}
+.divider[data-orient="h"] .h-del{right:calc(-28px*var(--inv));top:calc(-3px*var(--inv))}
+.divider[data-orient="v"] .h-del{right:calc(-3px*var(--inv));top:calc(-26px*var(--inv))}
+
+/* 팝업 창 */
+.popup{z-index:20;background:var(--popbody);border:2px solid var(--frame);border-top:0;border-radius:var(--wr) var(--wr) 2px 2px;
+  box-shadow:3px 4px 12px rgba(0,0,0,.35);color:var(--poptext)}
+.pop-title{height:23px;display:flex;align-items:center;gap:5px;padding:0 4px 0 6px;background:var(--tb);cursor:move;touch-action:none;
+  border-radius:var(--wr) var(--wr) 0 0;margin:0 -2px;border:1px solid var(--frame);border-bottom:0}
+.pop-title .pt{color:var(--tbtext);font:700 11.5px 'Trebuchet MS','Pretendard',sans-serif;text-shadow:var(--tbshadow);white-space:nowrap;overflow:hidden;padding:0 2px}
+.pop-title .pi{width:13px;height:13px;flex:none}
+.pop-x{margin-left:auto;width:17px;height:17px;border-radius:3px;border:1px solid #fff;background:var(--tbclose);position:relative;flex:none}
+.pop-x::before,.pop-x::after{content:"";position:absolute;left:3px;top:7px;width:9px;height:2px;background:#fff;transform:rotate(45deg)}
+.pop-x::after{transform:rotate(-45deg)}
+.pop-body{padding:10px 11px 11px;font-size:12px;line-height:1.5}
+.pop-row{display:flex;gap:9px;align-items:flex-start}
+.pop-row img{width:30px;height:30px;flex:none}
+.pbar{margin-top:8px;height:15px;border:1px solid #7f9db9;background:#fff;border-radius:3px;padding:1px;display:flex;gap:2px;overflow:hidden}
+.pbar b{width:8px;flex:none;background:linear-gradient(180deg,#c8f7c5 0%,#3ac93a 45%,#2aa82a 100%);border-radius:1px}
+.pop-ok{display:flex;justify-content:center;margin-top:8px}
+.pop-ok .xbtn{min-width:64px;height:21px;font-size:11px}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="stage-col">
+    <div class="pagehead"><span class="dot"></span>PROFILE SETUP WIZARD <small>— 글자를 클릭해서 바로 편집, 개체는 드래그로 이동</small></div>
+    <div id="stageWrap">
+      <div id="stage">
+        <canvas id="wallCv" class="layer" width="2400" height="1600"></canvas>
+        <canvas id="decoCv" class="layer" width="2400" height="1600"></canvas>
+        <div id="scene"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel-col">
+    <div class="xpwin">
+      <div class="tb"><span>⚙ 제어판</span><span class="sp"></span></div>
+      <div class="scroll">
+
+        <fieldset>
+          <legend>① 시안 고르기</legend>
+          <div class="themes" id="themeGrid"></div>
+          <p class="hint">시안을 바꿔도 적은 글·사진·스티커는 그대로 유지돼요.</p>
+        </fieldset>
+
+        <fieldset>
+          <legend>② 바탕화면 (뒤 배경)</legend>
+          <div class="themes" id="wallGrid"></div>
+          <div class="row" style="margin-top:8px">
+            <button class="b primary" id="wallBtn">🖼 내 사진으로 바꾸기</button>
+            <button class="b" id="wallReset">시안 기본 배경</button>
+          </div>
+          <div class="row"><label class="t">가로 위치</label><input type="range" id="wallX" min="0" max="100" value="50"></div>
+          <div class="row"><label class="t">세로 위치</label><input type="range" id="wallY" min="0" max="100" value="50"></div>
+          <div class="row"><label class="t">어둡게</label><input type="range" id="wallDim" min="0" max="70" value="0"></div>
+          <p class="hint">위치 슬라이더는 내 사진일 때만 움직여요. 가로로 긴 사진(3:2 정도)이 잘 맞아요.</p>
+        </fieldset>
+
+        <fieldset>
+          <legend>③ 글자 서식</legend>
+          <div class="row">
+            <label class="t">폰트</label>
+            <select id="fontSel">
+              <option value="Pretendard">프리텐다드</option>
+              <option value="Paperlogy">페이퍼로지</option>
+              <option value="Galmuri11">도트 (갈무리)</option>
+              <option value="Nanum Myeongjo">명조 (나눔명조)</option>
+            </select>
+            <button class="b" id="fontAll" title="모든 글 상자에 적용">전체 적용</button>
+          </div>
+          <div class="row">
+            <button class="b ico" data-cmd="bold" title="굵게"><b>B</b></button>
+            <button class="b ico" data-cmd="italic" title="기울임"><i style="font-family:serif">I</i></button>
+            <button class="b ico" data-cmd="underline" title="밑줄"><u>U</u></button>
+            <button class="b ico" data-cmd="justifyLeft" title="왼쪽 정렬">⇤</button>
+            <button class="b ico" data-cmd="justifyCenter" title="가운데 정렬">≡</button>
+            <input type="color" id="colorIn" value="#e2357f" title="글자 색">
+            <button class="b" id="colorApply">색 적용</button>
+          </div>
+          <div class="row">
+            <label class="t">글자 크기</label>
+            <button class="b ico" id="sizeDown">A−</button>
+            <button class="b ico" id="sizeUp">A+</button>
+            <span class="hint" style="margin:0">선택한 글 상자 전체</span>
+          </div>
+          <hr style="border:0;border-top:1px solid #d0d0bf;margin:8px 0">
+          <div class="row">
+            <button class="b primary" id="ttlBtn">★ 타이틀 적용/해제</button>
+          </div>
+          <div class="row"><label class="t">타이틀 박스</label>
+            <button class="b tbox-btn on" data-box="b-none">없음</button>
+            <button class="b tbox-btn" data-box="b-square">네모</button>
+            <button class="b tbox-btn" data-box="b-round">둥근</button>
+            <button class="b tbox-btn" data-box="b-fsquare">채운 네모</button>
+            <button class="b tbox-btn" data-box="b-fround">채운 둥근</button>
+          </div>
+          <div class="row"><label class="t">타이틀 크기</label>
+            <button class="b tsize-btn" data-size="s-s">작게</button>
+            <button class="b tsize-btn on" data-size="s-m">보통</button>
+            <button class="b tsize-btn" data-size="s-l">크게</button>
+          </div>
+          <p class="hint">글자를 드래그해서 선택한 뒤 버튼을 누르세요. 타이틀 안에 커서를 두고 박스/크기 버튼을 누르면 그 타이틀만 바뀌어요.</p>
+        </fieldset>
+
+        <fieldset>
+          <legend>④ 메인 사진</legend>
+          <div class="row">
+            <button class="b" id="picBtn">사진 넣기</button>
+            <button class="b" id="picFit">채우기 ↔ 맞추기</button>
+            <button class="b" id="picDel">빼기</button>
+          </div>
+          <div class="row"><label class="t">가로 위치</label><input type="range" id="picX" min="0" max="100" value="50"></div>
+          <div class="row"><label class="t">세로 위치</label><input type="range" id="picY" min="0" max="100" value="50"></div>
+        </fieldset>
+
+        <fieldset>
+          <legend>⑤ 구분선</legend>
+          <div class="row">
+            <button class="b" id="addH">─ 가로선 추가</button>
+            <button class="b" id="addV">│ 세로선 추가</button>
+          </div>
+          <div class="row"><label class="t">모양</label>
+            <select id="divStyle">
+              <option value="solid">실선</option><option value="dashed">파선</option><option value="dotted">점선</option>
+              <option value="double">이중선</option><option value="fade">페이드</option><option value="glow">네온</option><option value="etched">XP 홈선</option>
+            </select>
+            <select id="divW"><option>1</option><option selected>2</option><option>3</option><option>4</option><option>6</option></select>px
+          </div>
+          <div class="row"><label class="t">색</label>
+            <input type="color" id="divColor" value="#1a4fd6">
+            <button class="b" id="divColorApply">색 적용</button>
+            <button class="b" id="divColorReset">시안 색</button>
+          </div>
+          <p class="hint">선을 클릭하면 선택돼요. 끝의 네모로 길이 조절, 빨간 ✕ 또는 Delete 키로 삭제 (원래 있던 선도 지울 수 있어요).</p>
+        </fieldset>
+
+        <fieldset>
+          <legend>⑥ 스티커 · 팝업창</legend>
+          <div class="row">
+            <button class="b" id="stkBtn">PNG 스티커 추가</button>
+          </div>
+          <div class="row">
+            <select id="popKind"><option value="progress">진행바 팝업</option><option value="alert">경고 팝업</option><option value="msg">메시지 팝업</option></select>
+            <button class="b" id="popAdd">팝업 추가</button>
+          </div>
+          <div class="row">
+            <button class="b" id="zUp">맨 앞으로</button>
+            <button class="b" id="zDown">맨 뒤로</button>
+            <button class="b" id="dup">복제</button>
+            <button class="b" id="del">삭제</button>
+          </div>
+          <p class="hint">스티커: 드래그로 이동, 오른쪽 아래 네모로 크기, 위쪽 동그라미로 회전. 팝업창은 파란 제목줄을 잡고 옮겨요.</p>
+        </fieldset>
+
+        <fieldset>
+          <legend>⑦ 사이버 꾸밈 요소</legend>
+          <div class="row" id="decoChecks"></div>
+          <div class="row"><label class="t">꾸밈 색</label><input type="color" id="decoColor"><button class="b" id="decoReset">시안 기본값</button></div>
+          <hr style="border:0;border-top:1px solid #d0d0bf;margin:8px 0">
+          <div class="row" id="optChecks"></div>
+        </fieldset>
+
+        <fieldset>
+          <legend>⑧ 저장</legend>
+          <button class="b big primary" id="saveBtn">💾 PNG로 저장하기</button>
+          <div class="row" style="margin-top:8px">
+            <label class="t">해상도</label>
+            <select id="scaleSel"><option value="1">1200×800</option><option value="2" selected>2400×1600 (고화질)</option></select>
+          </div>
+          <div class="row"><button class="b" id="resetBtn">처음 상태로 초기화</button></div>
+          <p class="hint">작업 내용은 이 브라우저에 자동 저장돼요. (사진이 아주 크면 자동 저장이 안 될 수 있어요)</p>
+        </fieldset>
+
+      </div>
+      <div class="status" id="status">준비됨</div>
+    </div>
+  </div>
+</div>
+
+<div id="modal">
+  <div class="xpwin">
+    <div class="tb"><span>💾 저장 완료</span><span class="sp"></span></div>
+    <div class="scroll">
+      <img id="resultImg" alt="">
+      <p class="hint" style="text-align:center">다운로드가 안 되면 이미지를 길게 누르거나 우클릭해서 저장하세요.</p>
+      <div class="row" style="justify-content:center">
+        <a class="b primary" id="dlLink" download="profile_setup.png" style="text-decoration:none;display:inline-flex;align-items:center">다운로드</a>
+        <button class="b" id="closeModal">닫기</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<input type="file" id="picFile" accept="image/*" hidden>
+<input type="file" id="wallFile" accept="image/*" hidden>
+<input type="file" id="stkFile" accept="image/png,image/*" multiple hidden>
+
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+<script>
+(() => {
+const W = 1200, H = 800;
+const $ = s => document.querySelector(s);
+const stage = $('#stage'), scene = $('#scene'), wrap = $('#stageWrap');
+const KEY = 'xp_profile_wizard_v1';
+
+/* ---------- 아이콘 (직접 그린 SVG) ---------- */
+const svg = s => 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(s);
+const ICON = {
+  disc: svg(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><defs><radialGradient id="g" cx=".35" cy=".3"><stop offset="0" stop-color="#fff"/><stop offset=".5" stop-color="#cfe9ff"/><stop offset="1" stop-color="#7aa7e0"/></radialGradient></defs><circle cx="8" cy="8" r="7.3" fill="url(#g)" stroke="#2a4f8f" stroke-width=".8"/><circle cx="8" cy="8" r="2.2" fill="#fff" stroke="#2a4f8f" stroke-width=".7"/><path d="M3.5 5.2A5.3 5.3 0 0 1 7 2.9" stroke="#fff" stroke-width="1.1" fill="none"/></svg>`),
+  folder: svg(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40"><defs><linearGradient id="a" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff3b8"/><stop offset="1" stop-color="#f2c24a"/></linearGradient><linearGradient id="b" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffe58a"/><stop offset="1" stop-color="#e3a91f"/></linearGradient></defs><path d="M3 9h12l3 3h19v22H3z" fill="url(#b)" stroke="#a87512"/><rect x="7" y="13" width="26" height="15" fill="#fff" stroke="#cfcfcf"/><path d="M3 16h34l-2 18H5z" fill="url(#a)" stroke="#b9861b"/><circle cx="20" cy="24" r="4" fill="#ff7aa8" stroke="#c43c6f"/></svg>`),
+  pc: svg(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40"><defs><linearGradient id="s" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#9fe0ff"/><stop offset="1" stop-color="#1f6fd1"/></linearGradient></defs><rect x="5" y="5" width="30" height="22" rx="2" fill="#e8e8e8" stroke="#6b6b6b"/><rect x="8" y="8" width="24" height="16" fill="url(#s)"/><path d="M10 20c4-5 8-5 20-6v10H10z" fill="#5fbf3a" opacity=".9"/><rect x="15" y="27" width="10" height="4" fill="#cfcfcf" stroke="#6b6b6b"/><rect x="9" y="31" width="22" height="4" rx="1" fill="#e8e8e8" stroke="#6b6b6b"/></svg>`),
+  web: svg(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40"><defs><radialGradient id="w" cx=".35" cy=".3"><stop offset="0" stop-color="#e6fbff"/><stop offset=".6" stop-color="#3fb6f2"/><stop offset="1" stop-color="#0d5fb8"/></radialGradient></defs><circle cx="20" cy="20" r="15" fill="url(#w)" stroke="#0a4b94"/><path d="M5 20h30M20 5c-6 6-6 24 0 30M20 5c6 6 6 24 0 30M8 12h24M8 28h24" stroke="#fff" stroke-width="1.2" fill="none" opacity=".75"/><path d="M28 6l6 6-8 2z" fill="#ffd34a" stroke="#c48a00"/></svg>`),
+  warn: svg(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><path d="M16 3l14 25H2z" fill="#ffd400" stroke="#9a6b00" stroke-width="1.5" stroke-linejoin="round"/><rect x="14.5" y="11" width="3" height="10" rx="1" fill="#222"/><circle cx="16" cy="24.5" r="1.7" fill="#222"/></svg>`),
+  mail: svg(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><rect x="3" y="7" width="26" height="18" rx="2" fill="#fff" stroke="#3a6fd8" stroke-width="1.5"/><path d="M4 8l12 10L28 8" fill="none" stroke="#3a6fd8" stroke-width="1.5"/><circle cx="26" cy="8" r="5" fill="#ff4f7b" stroke="#fff" stroke-width="1.5"/></svg>`),
+  info: svg(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><circle cx="16" cy="16" r="13" fill="#2d7cf0" stroke="#0b3f9a" stroke-width="1.5"/><circle cx="16" cy="10" r="2" fill="#fff"/><rect x="14.3" y="14" width="3.4" height="10" rx="1" fill="#fff"/></svg>`),
+  cursor: svg(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 17 24"><path d="M1 1v19l5-5 3.5 7.5 3-1.4L9 13.8h7z" fill="#fff" stroke="#000" stroke-width="1.2" stroke-linejoin="round"/></svg>`),
+  start: svg(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><circle cx="10" cy="10" r="9" fill="#fff" opacity=".18"/><path d="M10 2l2 6 6 2-6 2-2 6-2-6-6-2 6-2z" fill="#fff" stroke="#1d6b1d" stroke-width=".6"/><circle cx="10" cy="10" r="1.6" fill="#ffe14a"/></svg>`)
+};
+
+/* ---------- 시안(테마) ---------- */
+const BASE = {
+  tb:'linear-gradient(180deg,#0997ff 0%,#0053ee 8%,#0050ee 40%,#0066ff 88%,#0066ff 93%,#005bff 95%,#003dd7 96%,#003dd7 100%)',
+  frame:'#0831d9', tbtext:'#ffffff', tbshadow:'1px 1px 0 #0f1089',
+  tbb:'linear-gradient(180deg,#5d95ff,#2a63e8 60%,#2458d8)', tbbbd:'#ffffff', tbbglyph:'#ffffff',
+  tbclose:'linear-gradient(180deg,#f09a7c,#e2502a 45%,#c63a14)',
+  body:'#ffffff', text:'#111111', sub:'#4a4a4a', titlecolor:'#000000', accent:'#1a4fd6', onaccent:'#ffffff',
+  side:'linear-gradient(160deg,#6c9cf0 0%,#2b5fd0 50%,#0d2f8f 100%)', sidetext:'#ffffff', sidearc:'rgba(255,255,255,.35)', sideshadow:'0 1px 2px rgba(0,0,40,.4)',
+  phbg:'rgba(255,255,255,.14)', picbd:'rgba(255,255,255,.8)',
+  footer:'#ece9d8', foottext:'#333333', footline:'#aca899', footline2:'#ffffff',
+  fieldbg:'#ffffff', fieldbd:'#7f9db9', fieldtext:'#111111', fr:'0px',
+  btnbg:'linear-gradient(180deg,#ffffff 0%,#f4f3ee 40%,#ecebe6 85%,#d6d0c5 100%)', btnbd:'#003c74', btntext:'#000000',
+  btnshadow:'inset 0 -1px 0 rgba(0,0,0,.08)', btnfocus:'#8fb4f5', br:'3px', wr:'8px',
+  glow:'0 10px 28px rgba(0,0,30,.45)',
+  popbody:'#ece9d8', poptext:'#111111',
+  task:'linear-gradient(180deg,#3168d5 0%,#4993e6 5%,#2157d7 14%,#2663e0 84%,#1941a5 100%)',
+  start:'linear-gradient(180deg,#3c9a3c 0%,#6cc663 10%,#3fae3f 45%,#2f8f2f 90%,#2a7a2a 100%)',
+  taskitem:'linear-gradient(180deg,#1e52b7,#2f6ee4)',
+  tray:'linear-gradient(180deg,#0c59b9 0%,#139ee9 6%,#18b9f5 10%,#139beb 20%,#1290e8 70%,#0d8dea 95%,#095bc9 100%)',
+  starttext:'#ffffff', tasktext:'#ffffff', traytext:'#ffffff'
+};
+const DAY = {sky:['#1d58d6','#5b9bef','#c4e2ff'], cloud:.95, far:'#7c9fcf', hill:['#8fd14a','#4aa524','#1f6d10'], glow:null, stars:0};
+const THEMES = {
+  luna:{name:'01 LUNA BLUE', css:{}, wall:DAY,
+    decor:{color:'#9ff3ff', grid:1, floor:0, rings:1, hex:0, brackets:1, sparkle:1, nodes:0, scan:0}},
+  olive:{name:'02 OLIVE', css:{
+      tb:'linear-gradient(180deg,#c8d9a0 0%,#98ad72 10%,#8ba169 45%,#a1b77c 88%,#768c4f 100%)', frame:'#7b8f55', tbshadow:'1px 1px 0 #4f6130',
+      tbb:'linear-gradient(180deg,#d2e0aa,#9bb072)', tbclose:'linear-gradient(180deg,#f0a58a,#d65a33 50%,#b5401a)',
+      accent:'#5e7a26', titlecolor:'#2e3d12', side:'linear-gradient(160deg,#d4e2a8 0%,#94ab6c 50%,#56692f 100%)', sideshadow:'0 1px 2px rgba(40,50,10,.5)',
+      btnbd:'#4f6130', btnfocus:'#b9cc8a',
+      task:'linear-gradient(180deg,#b3c58a 0%,#d6e3b0 6%,#93a96a 16%,#8ba169 84%,#6d824a 100%)',
+      taskitem:'linear-gradient(180deg,#7b8f55,#94aa6c)', tray:'linear-gradient(180deg,#a8bc7d,#c7d69f 10%,#a2b779 60%,#869b5e)'},
+    wall:{sky:['#2f6fc4','#83b4ea','#eaf3dc'], cloud:.95, far:'#93a9c4', hill:['#a6d757','#62a82f','#2e6b14'], glow:'#fff6c8', stars:0},
+    decor:{color:'#f6ffcf', grid:1, floor:0, rings:0, hex:0, brackets:1, sparkle:1, nodes:1, scan:0}},
+  silver:{name:'03 METALLIC', css:{
+      tb:'linear-gradient(180deg,#ffffff 0%,#e6e6ef 12%,#cfcfdd 50%,#b9b8cc 88%,#9b9ab4 100%)', frame:'#a3a2bd', tbtext:'#22223a', tbshadow:'0 1px 0 #ffffff',
+      tbb:'linear-gradient(180deg,#ffffff,#c9c8d8)', tbbbd:'#8c8ba6', tbbglyph:'#3a3a55',
+      accent:'#55587e', titlecolor:'#1d1f33', side:'linear-gradient(160deg,#ffffff 0%,#c9cddd 45%,#7d84a3 100%)', sidetext:'#1d1f33', sidearc:'rgba(60,64,100,.25)', sideshadow:'0 1px 0 rgba(255,255,255,.7)',
+      phbg:'rgba(255,255,255,.4)', picbd:'#8c8ba6', btnbd:'#6b6a88', btnfocus:'#c7c6da',
+      task:'linear-gradient(180deg,#f7f7fa 0%,#d9d9e4 8%,#c3c3d3 50%,#a8a7bd 100%)', start:'linear-gradient(180deg,#3c9a3c 0%,#6cc663 10%,#3fae3f 45%,#2f8f2f 100%)',
+      taskitem:'linear-gradient(180deg,#9897b2,#b5b4c9)', tray:'linear-gradient(180deg,#e6e6ee,#c9c8d8 50%,#b0afc4)', traytext:'#22223a'},
+    wall:{sky:['#4a76c8','#9dc0ec','#eef4fb'], cloud:1, far:'#a9b8d4', hill:['#9fd46a','#5ea83a','#2b6a1c'], glow:null, stars:0},
+    decor:{color:'#ffffff', grid:1, floor:0, rings:1, hex:1, brackets:1, sparkle:0, nodes:0, scan:0}},
+  night:{name:'04 MIDNIGHT.EXE', css:{
+      tb:'linear-gradient(180deg,#2a3d9c 0%,#14226a 45%,#070c33 100%)', frame:'#3a56d8', tbtext:'#bff6ff', tbshadow:'0 0 6px #4ff0ff',
+      tbb:'linear-gradient(180deg,#1d2c7a,#0a1240)', tbbbd:'#4ff0ff', tbbglyph:'#bff6ff', tbclose:'linear-gradient(180deg,#ff6aa8,#c3175c)',
+      body:'#0a0f2c', text:'#dff6ff', sub:'#8fb7d9', titlecolor:'#ffffff', accent:'#4ff0ff', onaccent:'#04102c',
+      side:'linear-gradient(160deg,#1a3192 0%,#081440 55%,#02030f 100%)', sidearc:'rgba(79,240,255,.45)', sideshadow:'0 0 6px rgba(79,240,255,.6)',
+      phbg:'rgba(79,240,255,.08)', picbd:'#4ff0ff',
+      footer:'#0d1438', foottext:'#8fb7d9', footline:'#2b3d9b', footline2:'#1a2560',
+      fieldbg:'#050a22', fieldbd:'#2f59c9', fieldtext:'#dff6ff',
+      btnbg:'linear-gradient(180deg,#22348a,#0c1440)', btnbd:'#4ff0ff', btntext:'#dff6ff', btnfocus:'rgba(79,240,255,.45)',
+      glow:'0 0 0 1px rgba(79,240,255,.5), 0 0 30px rgba(79,240,255,.45), 0 12px 30px rgba(0,0,0,.6)',
+      popbody:'#0d1438', poptext:'#dff6ff',
+      task:'linear-gradient(180deg,#1b2768 0%,#2a3a96 6%,#0f1850 16%,#0b1240 100%)', taskitem:'linear-gradient(180deg,#14206a,#22349a)',
+      tray:'linear-gradient(180deg,#0e1a5a,#1b2e8a 50%,#0a1240)'},
+    wall:{sky:['#01040f','#0a1d58','#2a4b9c'], cloud:.22, far:'#1a2a5a', hill:['#2d7a50','#14432a','#04170c'], glow:'#bfe6ff', stars:1, moon:1},
+    decor:{color:'#4ff0ff', grid:1, floor:1, rings:1, hex:1, brackets:1, sparkle:1, nodes:0, scan:1}},
+  sunset:{name:'05 SUNSET', css:{
+      tb:'linear-gradient(180deg,#ffb2d3 0%,#f25f9e 40%,#d43c7e 85%,#b02a65 100%)', frame:'#d6457f', tbshadow:'1px 1px 0 #8a1c4c',
+      tbb:'linear-gradient(180deg,#ff9cc6,#e0457f)', tbclose:'linear-gradient(180deg,#ffb36b,#f0672a)',
+      body:'#fff8fb', text:'#3a1030', sub:'#8a4a6e', titlecolor:'#3a0a2a', accent:'#e2357f',
+      side:'linear-gradient(160deg,#ffc39b 0%,#f5689f 50%,#7b2d8f 100%)', sideshadow:'0 1px 2px rgba(90,10,60,.45)',
+      footer:'#fbe9f0', foottext:'#7a3a5e', footline:'#e4b7c9',
+      fieldbd:'#e58ab0', btnbd:'#a3245c', btnfocus:'#ffb6d2',
+      popbody:'#fff2f7',
+      task:'linear-gradient(180deg,#f05a9a 0%,#ff8cbc 6%,#d93f80 16%,#c7346f 90%,#9e2457 100%)',
+      start:'linear-gradient(180deg,#ff9a3c 0%,#ffc06a 10%,#ff8a2a 50%,#d96a14 100%)',
+      taskitem:'linear-gradient(180deg,#b02a65,#d6457f)', tray:'linear-gradient(180deg,#ff9cc6,#f06aa4 40%,#c7346f)'},
+    wall:{sky:['#3a2a7c','#e46fa2','#ffcf8f'], cloud:.8, cloudTint:'#ffe0ef', far:'#8a64ad', hill:['#a9bc4f','#5f7d2c','#2c4518'], glow:'#ffd27a', stars:0, sun:1},
+    decor:{color:'#ffe3f4', grid:1, floor:1, rings:0, hex:0, brackets:1, sparkle:1, nodes:0, scan:0}},
+  cyber:{name:'06 CYBER GRID', css:{
+      tb:'linear-gradient(180deg,#5ff6ff 0%,#00c2ff 15%,#0a7bff 55%,#0040d0 100%)', frame:'#00b8ff', tbshadow:'0 0 6px #003b8f',
+      tbb:'linear-gradient(180deg,#5fd8ff,#0a6bf0)',
+      body:'#f4fdff', text:'#04223a', sub:'#2a6a92', titlecolor:'#021a30', accent:'#0090ff',
+      side:'linear-gradient(160deg,#00e4ff 0%,#0a4fbf 45%,#00142e 100%)', sidearc:'rgba(0,240,255,.55)', sideshadow:'0 0 6px rgba(0,0,0,.6)',
+      phbg:'rgba(0,240,255,.12)', picbd:'#00f0ff',
+      footer:'#e3f6fd', footline:'#94cfe6', fieldbd:'#00a8ff', btnbd:'#0070d0', btnfocus:'#7fe6ff',
+      glow:'0 0 0 1px #9ff6ff, 0 0 26px rgba(0,210,255,.75), 0 12px 30px rgba(0,20,60,.5)',
+      popbody:'#eafaff'},
+    wall:DAY,
+    decor:{color:'#00f0ff', grid:1, floor:1, rings:1, hex:1, brackets:1, sparkle:0, nodes:1, scan:1}},
+  terminal:{name:'07 TERMINAL', css:{
+      tb:'linear-gradient(180deg,#2a2a2a 0%,#111 50%,#000 100%)', frame:'#39ff6a', tbtext:'#39ff6a', tbshadow:'0 0 6px rgba(57,255,106,.8)',
+      tbb:'#000', tbbbd:'#39ff6a', tbbglyph:'#39ff6a', tbclose:'linear-gradient(180deg,#0a3a14,#000)',
+      body:'#020a04', text:'#8dffab', sub:'#3fbf62', titlecolor:'#39ff6a', accent:'#39ff6a', onaccent:'#001a06',
+      side:'linear-gradient(160deg,#0b3a18 0%,#031a09 50%,#000 100%)', sidetext:'#8dffab', sidearc:'rgba(57,255,106,.4)', sideshadow:'0 0 5px rgba(57,255,106,.6)',
+      phbg:'rgba(57,255,106,.06)', picbd:'#39ff6a',
+      footer:'#031008', foottext:'#3fbf62', footline:'#145a26', footline2:'#062110',
+      fieldbg:'#000', fieldbd:'#39ff6a', fieldtext:'#8dffab',
+      btnbg:'#000', btnbd:'#39ff6a', btntext:'#39ff6a', btnfocus:'rgba(57,255,106,.35)', br:'0px', wr:'4px',
+      glow:'0 0 0 1px rgba(57,255,106,.4), 0 0 24px rgba(57,255,106,.35), 0 12px 30px rgba(0,0,0,.7)',
+      popbody:'#020a04', poptext:'#8dffab',
+      task:'linear-gradient(180deg,#0d2a14,#000)', start:'linear-gradient(180deg,#1f7a33,#0b3a18)', taskitem:'#000', tray:'linear-gradient(180deg,#0a2410,#000)'},
+    wall:{sky:['#000a05','#0b3424','#3f8a5a'], cloud:.18, far:'#123a28', hill:['#2f6f2f','#123d14','#021004'], glow:null, stars:1},
+    decor:{color:'#39ff6a', grid:1, floor:0, rings:1, hex:1, brackets:1, sparkle:0, nodes:1, scan:1}},
+  angel:{name:'08 BABY BLUE', css:{
+      tb:'linear-gradient(180deg,#f2faff 0%,#c4e5ff 30%,#9dd2ff 70%,#7cbff5 100%)', frame:'#8ec8f3', tbtext:'#1d4f86', tbshadow:'0 1px 0 #ffffff',
+      tbb:'linear-gradient(180deg,#ffffff,#bfe0fb)', tbbbd:'#7cbff5', tbbglyph:'#2a64a8', tbclose:'linear-gradient(180deg,#ffd0de,#ff8fb1)',
+      body:'#ffffff', text:'#2a4a6b', sub:'#6f8fb0', titlecolor:'#1d4f86', accent:'#5aaaf0',
+      side:'linear-gradient(160deg,#ffffff 0%,#d9eeff 45%,#9fd0f7 100%)', sidetext:'#1d4f86', sidearc:'rgba(90,170,240,.45)', sideshadow:'0 1px 0 rgba(255,255,255,.8)',
+      phbg:'rgba(255,255,255,.6)', picbd:'#9fd0f7',
+      footer:'#f1f8ff', foottext:'#5a7ea8', footline:'#c8e2f7', fieldbd:'#9fd0f7', fr:'4px',
+      btnbg:'linear-gradient(180deg,#ffffff,#e4f2ff)', btnbd:'#6ab1e8', btntext:'#1d4f86', btnfocus:'#c6e4ff', br:'6px',
+      glow:'0 0 0 4px rgba(255,255,255,.6), 0 10px 30px rgba(60,130,200,.35)', popbody:'#f6fbff', poptext:'#2a4a6b',
+      task:'linear-gradient(180deg,#e9f6ff 0%,#bfe2ff 20%,#9dd2ff 100%)', start:'linear-gradient(180deg,#9be27f 0%,#6cc663 40%,#4aa84a 100%)',
+      taskitem:'linear-gradient(180deg,#7cbff5,#a8d7ff)', tray:'linear-gradient(180deg,#d6eeff,#a8d7ff)', traytext:'#1d4f86'},
+    wall:{sky:['#79b9f2','#bde0ff','#f4fbff'], cloud:1, far:'#b3cbe6', hill:['#b9e98a','#78c74f','#3f8f2a'], glow:'#ffffff', stars:0},
+    decor:{color:'#ffffff', grid:0, floor:0, rings:1, hex:0, brackets:1, sparkle:1, nodes:1, scan:0}},
+  holo:{name:'09 Y2K HOLO', css:{
+      tb:'linear-gradient(90deg,#ffb8e6 0%,#c8b5ff 35%,#9fe8ff 70%,#d8ffc8 100%)', frame:'#c6a8ff', tbtext:'#4a2a7a', tbshadow:'0 1px 0 rgba(255,255,255,.8)',
+      tbb:'linear-gradient(180deg,#ffffff,#e4d6ff)', tbbbd:'#a98bf0', tbbglyph:'#5a3a9a', tbclose:'linear-gradient(180deg,#ffd0f0,#ff8fd6)',
+      body:'#fdfaff', text:'#3b2a5c', sub:'#8a74b0', titlecolor:'#3b1f6e', accent:'#a86bff',
+      side:'linear-gradient(150deg,#ffd6f2 0%,#d7c8ff 38%,#bdf3ff 72%,#e8ffd8 100%)', sidetext:'#3b2a5c', sidearc:'rgba(168,107,255,.4)', sideshadow:'0 1px 0 rgba(255,255,255,.8)',
+      phbg:'rgba(255,255,255,.55)', picbd:'#ffffff',
+      footer:'#f6f0ff', foottext:'#7a62a6', footline:'#ddd0f5', fieldbd:'#c6a8ff', fr:'10px',
+      btnbg:'linear-gradient(180deg,#ffffff,#efe6ff)', btnbd:'#a98bf0', btntext:'#4a2a7a', btnfocus:'#ffc8ef', br:'14px', wr:'12px',
+      glow:'0 0 0 3px rgba(255,255,255,.7), 0 0 30px rgba(200,160,255,.6)', popbody:'#fbf7ff', poptext:'#3b2a5c',
+      task:'linear-gradient(90deg,#ffc8ec,#d6c8ff 40%,#b8f0ff 80%,#e0ffd2)', start:'linear-gradient(180deg,#ff9ad8 0%,#ff6fc4 50%,#e04aa8 100%)',
+      taskitem:'linear-gradient(180deg,#b79cff,#d6c4ff)', tray:'linear-gradient(180deg,#e9fbff,#bfefff)', traytext:'#4a2a7a'},
+    wall:{sky:['#a99cff','#ffc0e6','#fff1d6'], cloud:.95, cloudTint:'#fff4fb', far:'#c7a6e6', hill:['#bdea8e','#82c45c','#4a8f3a'], glow:'#ffffff', stars:0},
+    decor:{color:'#ffffff', grid:1, floor:0, rings:1, hex:0, brackets:0, sparkle:1, nodes:1, scan:0}},
+  error:{name:'10 SYSTEM ERROR', css:{
+      tb:'linear-gradient(180deg,#ff8a7a 0%,#e0261a 40%,#b8120a 85%,#8a0904 100%)', frame:'#c4180f', tbshadow:'1px 1px 0 #5a0000',
+      tbb:'linear-gradient(180deg,#ff7a6a,#c2180e)', tbclose:'linear-gradient(180deg,#333,#000)',
+      body:'#fffafa', text:'#1a0000', sub:'#8a2a24', titlecolor:'#b8120a', accent:'#d81e12',
+      side:'linear-gradient(160deg,#ff5a4a 0%,#7a0a05 50%,#1a0000 100%)', sidearc:'rgba(255,120,100,.45)', sideshadow:'0 1px 3px rgba(0,0,0,.7)',
+      footer:'#f3e7e4', footline:'#d2aaa4', fieldbd:'#d8857e', btnbd:'#7a0a05', btnfocus:'#ffb0a8',
+      glow:'0 0 0 1px rgba(255,60,40,.5), 0 0 28px rgba(255,40,20,.45), 0 12px 30px rgba(0,0,0,.6)', popbody:'#f3e7e4',
+      task:'linear-gradient(180deg,#a8120a 0%,#e0362a 6%,#9a0e07 16%,#7a0905 100%)', start:'linear-gradient(180deg,#333 0%,#555 10%,#222 60%,#000 100%)',
+      taskitem:'linear-gradient(180deg,#5a0603,#8a0904)', tray:'linear-gradient(180deg,#c4180f,#7a0905)'},
+    wall:{sky:['#120006','#4a0a1e','#b4473a'], cloud:.35, cloudTint:'#ffd6cf', far:'#5a1a2a', hill:['#6a7a2a','#2e4214','#0e1406'], glow:'#ff7a4a', stars:1},
+    decor:{color:'#ff4a3a', grid:1, floor:1, rings:1, hex:1, brackets:1, sparkle:0, nodes:0, scan:1}},
+  classic:{name:'11 CLASSIC 98', css:{
+      tb:'linear-gradient(90deg,#000080 0%,#1084d0 100%)', frame:'#c0c0c0', tbshadow:'none',
+      tbb:'#c0c0c0', tbbbd:'#000000', tbbglyph:'#000000', tbclose:'#c0c0c0',
+      body:'#c0c0c0', text:'#000000', sub:'#222', titlecolor:'#000080', accent:'#000080',
+      side:'linear-gradient(160deg,#008080 0%,#006a6a 55%,#003838 100%)', sidearc:'rgba(255,255,255,.3)',
+      phbg:'rgba(255,255,255,.12)', picbd:'#ffffff',
+      footer:'#c0c0c0', foottext:'#000', footline:'#808080', footline2:'#ffffff',
+      fieldbd:'#808080', btnbg:'#c0c0c0', btnbd:'#000000', btntext:'#000000',
+      btnshadow:'inset -1px -1px 0 #808080, inset 1px 1px 0 #ffffff', btnfocus:'#000000', br:'0px', wr:'0px',
+      glow:'1px 1px 0 #000, 6px 8px 0 rgba(0,0,0,.25)', popbody:'#c0c0c0', poptext:'#000',
+      task:'#c0c0c0', start:'#c0c0c0', taskitem:'#d8d8d8', tray:'#c0c0c0', starttext:'#000000', tasktext:'#000000', traytext:'#000000'},
+    wall:DAY,
+    decor:{color:'#ffffff', grid:1, floor:0, rings:0, hex:1, brackets:1, sparkle:0, nodes:1, scan:0}},
+  choco:{name:'12 MOCHA', css:{
+      tb:'linear-gradient(180deg,#c99a74 0%,#9a6542 40%,#7a4a2c 85%,#5a321b 100%)', frame:'#7a4a2c', tbtext:'#fff6ea', tbshadow:'1px 1px 0 #3a1e0c',
+      tbb:'linear-gradient(180deg,#c48e66,#8a5634)', tbclose:'linear-gradient(180deg,#e9a07a,#c25a32)',
+      body:'#fffaf2', text:'#3a2414', sub:'#8a6a50', titlecolor:'#4a2a14', accent:'#9a6542',
+      side:'linear-gradient(160deg,#f3d9bf 0%,#c99a74 45%,#5a321b 100%)', sidetext:'#fff6ea', sidearc:'rgba(255,240,220,.4)', sideshadow:'0 1px 2px rgba(60,30,10,.6)',
+      footer:'#f3e9da', foottext:'#7a5a40', footline:'#d8c3a8', fieldbd:'#c4a07e', btnbd:'#5a321b', btnfocus:'#e8c9a8',
+      popbody:'#f8efe2', poptext:'#3a2414',
+      task:'linear-gradient(180deg,#8a5634 0%,#b07a52 6%,#7a4a2c 16%,#6a3e22 100%)', start:'linear-gradient(180deg,#e9b98a 0%,#c98a5a 50%,#9a5f34 100%)',
+      taskitem:'linear-gradient(180deg,#5a321b,#7a4a2c)', tray:'linear-gradient(180deg,#b07a52,#7a4a2c)'},
+    wall:{sky:['#4f6fb0','#b6c7e2','#fbeedc'], cloud:.9, cloudTint:'#fff8ee', far:'#a7a6bf', hill:['#b5cf6a','#78a23c','#3f6420'], glow:'#ffe7c2', stars:0},
+    decor:{color:'#fff3e0', grid:0, floor:0, rings:1, hex:0, brackets:1, sparkle:1, nodes:1, scan:0}}
+};
+
+const WALLS = {
+  day:{name:'낮 동산', p:DAY}, night:{name:'밤 동산', p:THEMES.night.wall}, sunset:{name:'노을 동산', p:THEMES.sunset.wall},
+  baby:{name:'하늘색 동산', p:THEMES.angel.wall}, pastel:{name:'파스텔 동산', p:THEMES.holo.wall}, mocha:{name:'포근한 동산', p:THEMES.choco.wall},
+  olive:{name:'초여름 동산', p:THEMES.olive.wall}, green:{name:'초록 새벽', p:THEMES.terminal.wall}, red:{name:'붉은 노을', p:THEMES.error.wall}
+};
+['olive','silver','sunset','terminal','angel','holo','error','classic','choco'].forEach(k=>delete THEMES[k]);
+THEMES.luna.name='01 LUNA BLUE'; THEMES.night.name='02 MIDNIGHT.EXE'; THEMES.cyber.name='03 CYBER GRID';
+
+const DECO_LABEL = {grid:'그리드', floor:'바닥 그리드', rings:'HUD 링', hex:'데이터 코드', brackets:'코너 브래킷·라벨', sparkle:'반짝이', nodes:'네트워크 노드', scan:'스캔라인'};
+const OPT_LABEL = {icons:'바탕화면 아이콘', task:'작업 표시줄', back:'< Back 버튼', cursor:'마우스 커서'};
+
+let state = {theme:'luna', decor:{...THEMES.luna.decor}, opts:{icons:1, task:1, back:0, cursor:1}, wall:'theme', wallImg:null, wallX:50, wallY:50, wallDim:0};
+let titleBox = 'b-none', titleSize = 's-m';
+
+/* ---------- 유틸 ---------- */
+function rng(seed){ return function(){ seed |= 0; seed = seed + 0x6D2B79F5 | 0; let t = Math.imul(seed ^ seed >>> 15, 1 | seed); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+function rgba(hex, a){ hex = hex.replace('#',''); if(hex.length===3) hex = hex.split('').map(c=>c+c).join(''); const n = parseInt(hex,16); return `rgba(${n>>16&255},${n>>8&255},${n&255},${a})`; }
+function setStatus(t){ $('#status').textContent = t; }
+function nowClock(){ const d = new Date(); let h = d.getHours(), m = String(d.getMinutes()).padStart(2,'0'); const ap = h<12?'오전':'오후'; h = h%12||12; return `${ap} ${h}:${m}`; }
+
+/* ---------- 배경화면 (동산) ---------- */
+let wallImgObj = null;
+function wallDim(ctx){ if(state.wallDim>0){ ctx.fillStyle = `rgba(0,0,0,${state.wallDim/100})`; ctx.fillRect(0,0,W,H); } }
+function drawWall(){
+  const cv = $('#wallCv'), ctx = cv.getContext('2d');
+  ctx.setTransform(2,0,0,2,0,0);
+  if(state.wall==='custom' && state.wallImg){
+    if(!wallImgObj || wallImgObj.src !== state.wallImg){ wallImgObj = new Image(); wallImgObj.onload = drawWall; wallImgObj.src = state.wallImg; return; }
+    if(!wallImgObj.complete || !wallImgObj.naturalWidth) return;
+    const iw = wallImgObj.naturalWidth, ih = wallImgObj.naturalHeight, k = Math.max(W/iw, H/ih), dw = iw*k, dh = ih*k;
+    ctx.clearRect(0,0,W,H);
+    ctx.drawImage(wallImgObj, (W-dw)*state.wallX/100, (H-dh)*state.wallY/100, dw, dh);
+    wallDim(ctx); syncWallGrid(); return;
+  }
+  const p = (WALLS[state.wall] ? WALLS[state.wall].p : THEMES[state.theme].wall);
+  ctx.clearRect(0,0,W,H);
+  const r = rng(7);
+  // 하늘
+  let g = ctx.createLinearGradient(0,0,0,H*0.72);
+  g.addColorStop(0,p.sky[0]); g.addColorStop(.55,p.sky[1]); g.addColorStop(1,p.sky[2]);
+  ctx.fillStyle = g; ctx.fillRect(0,0,W,H);
+  if(p.glow){ const gx = p.sun? W*0.5 : W*0.78, gy = p.sun? H*0.62 : H*0.18;
+    g = ctx.createRadialGradient(gx,gy,0,gx,gy,p.sun?520:420); g.addColorStop(0,rgba(p.glow,.75)); g.addColorStop(.35,rgba(p.glow,.25)); g.addColorStop(1,rgba(p.glow,0));
+    ctx.fillStyle = g; ctx.fillRect(0,0,W,H);
+    if(p.sun){ ctx.fillStyle = rgba('#fff3c4',.95); ctx.beginPath(); ctx.arc(gx,gy,46,0,7); ctx.fill(); }
+  }
+  if(p.stars){ for(let i=0;i<260;i++){ const x=r()*W, y=r()*H*0.62, s=r()*1.6+.3; ctx.fillStyle=`rgba(255,255,255,${.3+r()*.7})`; ctx.fillRect(x,y,s,s);} }
+  if(p.moon){ ctx.fillStyle='rgba(255,255,240,.95)'; ctx.beginPath(); ctx.arc(W*0.8,H*0.16,30,0,7); ctx.fill(); ctx.fillStyle=p.sky[0]; ctx.beginPath(); ctx.arc(W*0.8+12,H*0.16-8,26,0,7); ctx.fill(); }
+  // 구름
+  const tint = p.cloudTint || '#ffffff';
+  const puff = (cx,cy,sx,sy,n,a)=>{ for(let i=0;i<n;i++){ const x=cx+(r()-.5)*sx, y=cy+(r()-.5)*sy, rad=20+r()*48;
+      ctx.save(); ctx.translate(x,y); ctx.scale(1.7,.62);
+      const gg=ctx.createRadialGradient(0,0,0,0,0,rad); gg.addColorStop(0,rgba(tint,a)); gg.addColorStop(.6,rgba(tint,a*.45)); gg.addColorStop(1,rgba(tint,0));
+      ctx.fillStyle=gg; ctx.beginPath(); ctx.arc(0,0,rad,0,7); ctx.fill(); ctx.restore(); } };
+  const wisp = (cx,cy,len,a)=>{ for(let i=0;i<26;i++){ const x=cx+(r()-.5)*len, y=cy+(r()-.5)*24, rad=14+r()*26;
+      ctx.save(); ctx.translate(x,y); ctx.rotate(-.18); ctx.scale(3.4,.38);
+      const gg=ctx.createRadialGradient(0,0,0,0,0,rad); gg.addColorStop(0,rgba(tint,a)); gg.addColorStop(1,rgba(tint,0));
+      ctx.fillStyle=gg; ctx.beginPath(); ctx.arc(0,0,rad,0,7); ctx.fill(); ctx.restore(); } };
+  const A = p.cloud;
+  wisp(820,70,420,.5*A); wisp(1050,150,300,.45*A); wisp(380,40,360,.35*A);
+  puff(210,250,300,70,34,.55*A); puff(560,330,360,60,30,.5*A); puff(990,300,300,60,30,.55*A); puff(760,200,220,50,18,.4*A);
+  puff(100,380,240,40,20,.45*A); puff(1120,400,200,40,16,.45*A);
+  // 먼 언덕
+  ctx.fillStyle = p.far; ctx.beginPath(); ctx.moveTo(620,H); ctx.lineTo(620,H*0.68); ctx.quadraticCurveTo(900,H*0.585,W,H*0.63); ctx.lineTo(W,H); ctx.fill();
+  g = ctx.createLinearGradient(0,H*0.58,0,H*0.72); g.addColorStop(0,'rgba(255,255,255,0)'); g.addColorStop(1,'rgba(255,255,255,.25)'); ctx.fillStyle=g; ctx.fill();
+  // 메인 동산
+  const hill = new Path2D(); hill.moveTo(0,H*0.62);
+  hill.bezierCurveTo(W*0.18,H*0.50, W*0.40,H*0.49, W*0.60,H*0.585);
+  hill.bezierCurveTo(W*0.76,H*0.66, W*0.90,H*0.655, W,H*0.69);
+  hill.lineTo(W,H); hill.lineTo(0,H); hill.closePath();
+  g = ctx.createLinearGradient(0,H*0.5,0,H); g.addColorStop(0,p.hill[0]); g.addColorStop(.45,p.hill[1]); g.addColorStop(1,p.hill[2]);
+  ctx.fillStyle = g; ctx.fill(hill);
+  ctx.save(); ctx.clip(hill);
+  g = ctx.createRadialGradient(W*0.36,H*0.52,10,W*0.36,H*0.52,520); g.addColorStop(0,'rgba(255,255,190,.38)'); g.addColorStop(1,'rgba(255,255,190,0)'); ctx.fillStyle=g; ctx.fillRect(0,0,W,H);
+  g = ctx.createRadialGradient(W*0.95,H*1.05,10,W*0.95,H*1.05,620); g.addColorStop(0,'rgba(0,0,0,.35)'); g.addColorStop(1,'rgba(0,0,0,0)'); ctx.fillStyle=g; ctx.fillRect(0,0,W,H);
+  for(let i=0;i<5000;i++){ const x=r()*W, y=H*0.48+r()*H*0.52; const l=r();
+    ctx.strokeStyle = l<.5 ? 'rgba(0,40,0,.10)' : 'rgba(255,255,200,.10)'; ctx.lineWidth=1;
+    ctx.beginPath(); ctx.moveTo(x,y); ctx.lineTo(x+(r()-.5)*2,y-2-r()*3); ctx.stroke(); }
+  ctx.restore();
+  wallDim(ctx); syncWallGrid();
+}
+function wallSwatch(p){ return `linear-gradient(180deg,${p.sky[0]} 0%,${p.sky[1]} 40%,${p.sky[2]} 58%,${p.hill[0]} 60%,${p.hill[1]} 80%,${p.hill[2]} 100%)`; }
+function syncWallGrid(){
+  document.querySelectorAll('#wallGrid .th').forEach(b=>{
+    b.classList.toggle('on', b.dataset.id===state.wall);
+    if(b.dataset.id==='theme') b.querySelector('.sw').style.background = wallSwatch(THEMES[state.theme].wall);
+    if(b.dataset.id==='custom'){ b.style.display = state.wallImg ? '' : 'none';
+      if(state.wallImg) b.querySelector('.sw').style.background = `url("${state.wallImg}") center/cover`; }
+  });
+}
+
+/* ---------- 사이버 꾸밈 요소 ---------- */
+function drawDecor(){
+  const cv = $('#decoCv'), ctx = cv.getContext('2d'); const d = state.decor; const c = d.color || '#9ff3ff';
+  ctx.setTransform(2,0,0,2,0,0); ctx.clearRect(0,0,W,H);
+  const r = rng(42);
+  const mono = '10px "Galmuri11","Consolas",monospace';
+  if(d.grid){
+    for(let x=0;x<=W;x+=40){ const g=ctx.createLinearGradient(0,0,0,H*0.7); g.addColorStop(0,rgba(c,.28)); g.addColorStop(1,rgba(c,0));
+      ctx.strokeStyle=g; ctx.lineWidth=1; ctx.beginPath(); ctx.moveTo(x+.5,0); ctx.lineTo(x+.5,H*0.7); ctx.stroke(); }
+    for(let y=0;y<H*0.7;y+=40){ ctx.strokeStyle=rgba(c,.28*(1-y/(H*0.7))); ctx.beginPath(); ctx.moveTo(0,y+.5); ctx.lineTo(W,y+.5); ctx.stroke(); }
+    for(let x=0;x<=W;x+=40) for(let y=0;y<H*0.6;y+=40){ if(r()<.06){ ctx.fillStyle=rgba(c,.5*(1-y/(H*0.6))); ctx.fillRect(x-1.5,y-1.5,3,3);} }
+  }
+  if(d.floor){
+    const y0 = H*0.70, vx = W/2, vy = y0-60;
+    ctx.save(); ctx.beginPath(); ctx.rect(0,y0,W,H-y0); ctx.clip();
+    ctx.lineWidth=1.2;
+    for(let i=-30;i<=30;i++){ const bx = vx + i*70; ctx.strokeStyle=rgba(c,.45); ctx.beginPath(); ctx.moveTo(vx,vy); ctx.lineTo(bx + (bx-vx)*2.5, H+200); ctx.stroke(); }
+    for(let k=1;k<=14;k++){ const t=k/14, y=y0+(H-y0)*t*t; ctx.strokeStyle=rgba(c,.2+.35*t); ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(W,y); ctx.stroke(); }
+    ctx.restore();
+    const g=ctx.createLinearGradient(0,y0-6,0,y0+6); g.addColorStop(0,rgba(c,0)); g.addColorStop(.5,rgba(c,.9)); g.addColorStop(1,rgba(c,0));
+    ctx.fillStyle=g; ctx.fillRect(0,y0-6,W,12);
+  }
+  if(d.rings){
+    const hud=(x,y,s)=>{ ctx.save(); ctx.translate(x,y); ctx.scale(s,s);
+      ctx.strokeStyle=rgba(c,.85); ctx.lineWidth=1.4; ctx.beginPath(); ctx.arc(0,0,30,0,7); ctx.stroke();
+      ctx.setLineDash([4,5]); ctx.strokeStyle=rgba(c,.6); ctx.beginPath(); ctx.arc(0,0,46,0,7); ctx.stroke(); ctx.setLineDash([]);
+      ctx.lineWidth=5; ctx.strokeStyle=rgba(c,.7); ctx.beginPath(); ctx.arc(0,0,62,-.4,1.1); ctx.stroke(); ctx.beginPath(); ctx.arc(0,0,62,2.4,3.5); ctx.stroke();
+      ctx.lineWidth=1; ctx.strokeStyle=rgba(c,.55); for(let a=0;a<72;a++){ const an=a/72*Math.PI*2, l=a%6===0?10:4; ctx.beginPath(); ctx.moveTo(Math.cos(an)*76,Math.sin(an)*76); ctx.lineTo(Math.cos(an)*(76+l),Math.sin(an)*(76+l)); ctx.stroke(); }
+      ctx.strokeStyle=rgba(c,.9); ctx.beginPath(); ctx.moveTo(-14,0); ctx.lineTo(14,0); ctx.moveTo(0,-14); ctx.lineTo(0,14); ctx.stroke();
+      ctx.fillStyle=rgba(c,.95); ctx.font=mono; ctx.fillText('SCAN 87%',36,-36); ctx.fillText('LOCK ◆',-96,52);
+      ctx.restore(); };
+    hud(1110,180,1); hud(80,640,.8); hud(640,712,.45);
+  }
+  if(d.hex){
+    ctx.font=mono; const hx='0123456789ABCDEF';
+    const col=(x,y0,n)=>{ for(let i=0;i<n;i++){ let s=''; for(let k=0;k<4;k++) s+=hx[Math.floor(r()*16)]+hx[Math.floor(r()*16)]+' ';
+      ctx.fillStyle=rgba(c,.25+r()*.5); ctx.fillText(s,x,y0+i*13); } };
+    col(1058,300,22); col(18,250,14);
+    ctx.fillStyle=rgba(c,.75); for(let i=0;i<3;i++){ let s=''; for(let k=0;k<64;k++) s+= r()<.5?'0':'1'; ctx.fillText(s,180+i*0,22+i*12); }
+  }
+  if(d.brackets){
+    ctx.strokeStyle=rgba(c,.9); ctx.lineWidth=2; const L=26, m=10;
+    [[m,m,1,1],[W-m,m,-1,1],[m,H-m-36,1,-1],[W-m,H-m-36,-1,-1]].forEach(([x,y,sx,sy])=>{ ctx.beginPath(); ctx.moveTo(x,y+L*sy); ctx.lineTo(x,y); ctx.lineTo(x+L*sx,y); ctx.stroke(); });
+    ctx.font=mono; ctx.fillStyle=rgba(c,.95);
+    ctx.fillText('SYS://PROFILE_WIZARD  ▮ ONLINE',W-236,66); ctx.fillText('X:0160  Y:0076  Z:00',180,H-58);
+    ctx.fillText('[ USER_DATA.DAT ]  LOADING ■■■■■■□□',W-312,H-58);
+    // 바코드
+    let x=920; for(let i=0;i<34;i++){ const w=1+Math.floor(r()*3); ctx.fillStyle=rgba(c,.8); ctx.fillRect(x,30,w,22); x+=w+1+Math.floor(r()*2); }
+    // 십자선
+    const cross=(x,y)=>{ ctx.strokeStyle=rgba(c,.9); ctx.lineWidth=1.2; ctx.beginPath(); ctx.moveTo(x-12,y); ctx.lineTo(x-4,y); ctx.moveTo(x+4,y); ctx.lineTo(x+12,y); ctx.moveTo(x,y-12); ctx.lineTo(x,y-4); ctx.moveTo(x,y+4); ctx.lineTo(x,y+12); ctx.stroke(); };
+    cross(1150,720); cross(120,40); cross(640,40);
+  }
+  if(d.nodes){
+    const pts=[[40,300],[120,250],[90,420],[30,520],[1080,320],[1160,420],[1100,560],[1170,640],[700,30],[560,50],[420,24],[260,705],[900,710]];
+    ctx.setLineDash([2,4]); ctx.strokeStyle=rgba(c,.75); ctx.lineWidth=1;
+    for(let i=0;i<pts.length;i++) for(let j=i+1;j<pts.length;j++){ const [a,b]=pts[i],[e,f]=pts[j]; if(Math.hypot(a-e,b-f)<190){ ctx.beginPath(); ctx.moveTo(a,b); ctx.lineTo(e,f); ctx.stroke(); } }
+    ctx.setLineDash([]);
+    pts.forEach(([x,y])=>{ ctx.fillStyle=rgba(c,.95); ctx.fillRect(x-3,y-3,6,6); ctx.strokeStyle=rgba(c,.6); ctx.strokeRect(x-6.5,y-6.5,13,13); });
+  }
+  if(d.sparkle){
+    const star=(x,y,s,a)=>{ ctx.fillStyle=rgba(c,a); ctx.beginPath(); ctx.moveTo(x,y-s); ctx.quadraticCurveTo(x,y,x+s,y); ctx.quadraticCurveTo(x,y,x,y+s); ctx.quadraticCurveTo(x,y,x-s,y); ctx.quadraticCurveTo(x,y,x,y-s); ctx.fill(); };
+    const S=[[130,190,14],[1090,80,16],[1160,280,9],[60,470,10],[1120,520,12],[300,40,10],[880,52,8],[1010,700,11],[150,700,9],[480,712,7],[40,120,7],[1180,700,7]];
+    S.forEach(([x,y,s])=>star(x,y,s,.95));
+    for(let i=0;i<40;i++){ star(r()*W,r()*H*0.9,1.5+r()*3,.5+r()*.5); }
+  }
+  if(d.scan){ ctx.fillStyle=rgba('#000000',.07); for(let y=0;y<H;y+=3) ctx.fillRect(0,y,W,1);
+    ctx.fillStyle=rgba(c,.08); ctx.fillRect(0,H*0.33,W,18); ctx.fillRect(0,H*0.335,W,3); }
+}
+
+/* ---------- 기본 장면 ---------- */
+const H_HANDLES = {
+  sticker:'<span class="h h-resize"></span><span class="h h-rot"></span><span class="h h-del"></span>',
+  popup:'<span class="h h-resize"></span><span class="h h-del"></span>',
+  divider:'<span class="h h-resize"></span><span class="h h-del"></span>'
+};
+function pbarHTML(n){ let s=''; for(let i=0;i<n;i++) s+='<b></b>'; return `<div class="pbar">${s}</div>`; }
+function popupHTML(kind, x, y, w, z){
+  let title, body;
+  if(kind==='alert'){ title='System Warning';
+    body=`<div class="pop-row"><img src="${ICON.warn}" alt=""><div contenteditable="true">새로운 친구가 접근하려고 합니다.<br>허용하시겠습니까?</div></div><div class="pop-ok"><span class="xbtn next">OK</span></div>`; }
+  else if(kind==='msg'){ title='New Message (1)';
+    body=`<div class="pop-row"><img src="${ICON.mail}" alt=""><div contenteditable="true"><b>from. 익명</b><br>프로필 잘 봤어요! ♡</div></div>`; }
+  else { title='LOADING.EXE';
+    body=`<div contenteditable="true">프로필 데이터 불러오는 중...</div>${pbarHTML(14)}`; }
+  return `<div class="obj popup" data-type="popup" data-kind="${kind}" style="left:${x}px;top:${y}px;width:${w}px;z-index:${z}">
+    <div class="pop-title"><img class="pi" src="${kind==='msg'?ICON.mail:kind==='alert'?ICON.info:ICON.disc}" alt=""><span class="pt" contenteditable="true">${title}</span><i class="pop-x"></i></div>
+    <div class="pop-body">${body}</div>${H_HANDLES.popup}</div>`;
+}
+function defaultScene(){
+  return `
+  <div class="desk-icons">
+    <div class="dicon"><img src="${ICON.folder}" alt=""><span contenteditable="true" class="single">My Profile</span></div>
+    <div class="dicon"><img src="${ICON.pc}" alt=""><span contenteditable="true" class="single">My Computer</span></div>
+    <div class="dicon"><img src="${ICON.web}" alt=""><span contenteditable="true" class="single">Web Browser</span></div>
+  </div>
+  ${popupHTML('progress', 18, 470, 230, 20)}
+  ${popupHTML('alert', 1000, 96, 190, 21)}
+  <div class="win" id="win">
+    <div class="win-tb"><img class="tb-ico" src="${ICON.disc}" alt=""><span class="tb-title single" contenteditable="true">Profile - Setup wizard</span>
+      <div class="tb-btns"><i class="tbb min"></i><i class="tbb max"></i><i class="tbb close"></i></div></div>
+    <div class="win-content">
+      <div class="side">
+        <div class="side-deco"><i class="a1"></i><i class="a2"></i><i class="a3"></i></div>
+        <div class="pic" id="pic" data-fit="cover"><div class="ph"><span>＋</span>클릭해서 사진 넣기<small>세로로 긴 사진 추천 (약 3:5)</small></div></div>
+      </div>
+      <div class="main">
+        <div class="idrow">
+          <span class="lbl single" contenteditable="true">NAME</span><span class="field single" contenteditable="true">이름을 적어 주세요</span>
+          <span class="lbl single" contenteditable="true">ID</span><span class="field idf single" contenteditable="true">@my_id</span>
+        </div>
+        <div class="tbox" id="box1" contenteditable="true"><span class="ttl b-none s-m">Welcome to the<br>프로필 설치 마법사</span><div><br></div><div>이 마법사는 저를 알아가는 과정을 안내합니다.</div><div>자기소개를 자유롭게 적어 주세요.</div><div><br></div><div>계속하려면 [Next]를 클릭하세요.</div></div>
+        <div class="tgap"></div>
+        <div class="tbox" id="box2" contenteditable="true"><span class="ttl b-round s-s">ABOUT ME</span><div>♡ 좋아하는 것 : </div><div>✕ 싫어하는 것 : </div><div>☆ 요즘 빠진 것 : </div><div>✉ 연락 : </div></div>
+      </div>
+    </div>
+    <div class="win-foot">
+      <span class="foot-note single" contenteditable="true">PROFILE SETUP v1.0</span>
+      <div class="btns"><span class="xbtn back">&lt; Back</span><span class="xbtn next">Next &gt;<img class="cur" src="${ICON.cursor}" alt=""></span><span class="xbtn">Cancel</span></div>
+    </div>
+  </div>
+  <div class="taskbar">
+    <div class="startbtn"><img src="${ICON.start}" alt=""><span>start</span></div>
+    <div class="taskitem"><img src="${ICON.disc}" alt=""><span contenteditable="true" class="single">Profile - Setup wizard</span></div>
+    <div class="tray"><i style="background:#ffd34a"></i><i style="background:#5fd65f"></i><i style="background:#fff"></i><span contenteditable="true" class="single">${nowClock()}</span></div>
+  </div>`;
+}
+function dividerHTML(x,y,len,orient,style='solid',w=2,z=60){
+  const size = orient==='h' ? `width:${len}px` : `height:${len}px`;
+  return `<div class="obj divider" data-type="divider" data-orient="${orient}" data-style="${style}" style="left:${x}px;top:${y}px;${size};--dw:${w}px;z-index:${z}"><i class="line"></i>${H_HANDLES.divider}</div>`;
+}
+
+/* ---------- 스케일 ---------- */
+let scale = 1;
+function fit(){
+  const w = wrap.parentElement.clientWidth;
+  scale = Math.min(1, w / W);
+  stage.style.transform = `scale(${scale})`;
+  wrap.style.width = W*scale + 'px'; wrap.style.height = H*scale + 'px';
+  stage.style.setProperty('--inv', (1/scale).toFixed(3));
+}
+window.addEventListener('resize', fit);
+
+function stagePt(el){ const s = stage.getBoundingClientRect(), r = el.getBoundingClientRect();
+  return {x:(r.left-s.left)/scale, y:(r.top-s.top)/scale, w:r.width/scale, h:r.height/scale}; }
+
+/* ---------- 테마 적용 ---------- */
+function applyTheme(id, resetDecor){
+  state.theme = id; const T = THEMES[id];
+  const css = {...BASE, ...T.css};
+  for(const k in css) stage.style.setProperty('--'+k, css[k]);
+  if(resetDecor) state.decor = {...T.decor};
+  syncUI(); drawWall(); drawDecor();
+  document.querySelectorAll('.th').forEach(b=>b.classList.toggle('on', b.dataset.id===id));
+  const ac = css.accent; if(/^#/.test(ac)) $('#divColor').value = ac.length===4? '#'+ac.slice(1).split('').map(x=>x+x).join('') : ac;
+}
+function applyOpts(){
+  stage.classList.toggle('hide-icons', !state.opts.icons);
+  stage.classList.toggle('hide-task', !state.opts.task);
+  stage.classList.toggle('hide-back', !state.opts.back);
+  stage.classList.toggle('hide-cursor', !state.opts.cursor);
+}
+function syncUI(){
+  document.querySelectorAll('#decoChecks input').forEach(i=> i.checked = !!state.decor[i.dataset.k]);
+  document.querySelectorAll('#optChecks input').forEach(i=> i.checked = !!state.opts[i.dataset.k]);
+  $('#decoColor').value = state.decor.color;
+  $('#wallX').value = state.wallX; $('#wallY').value = state.wallY; $('#wallDim').value = state.wallDim;
+  applyOpts();
+}
+
+/* ---------- 패널 생성 ---------- */
+(function buildPanel(){
+  const grid = $('#themeGrid');
+  for(const id in THEMES){ const T = THEMES[id], css = {...BASE, ...T.css};
+    const b = document.createElement('div'); b.className='th'; b.dataset.id=id;
+    b.innerHTML = `<div class="sw"><i style="background:${css.tb}"></i><span><b style="background:${css.side}"></b><em style="background:${css.body}"></em></span></div>${T.name}`;
+    b.onclick = ()=>{ applyTheme(id, true); save(); setStatus(T.name + ' 시안 적용'); };
+    grid.appendChild(b); }
+  const wg = $('#wallGrid');
+  const addW = (id, name, bg)=>{ const b=document.createElement('div'); b.className='th'; b.dataset.id=id;
+    b.innerHTML = `<div class="sw" style="background:${bg}"></div>${name}`;
+    b.onclick = ()=>{ state.wall = id; drawWall(); save(); setStatus(name + ' 배경 적용'); }; wg.appendChild(b); };
+  addW('theme','시안 따라가기','');
+  for(const id in WALLS) addW(id, WALLS[id].name, wallSwatch(WALLS[id].p));
+  addW('custom','내 사진','');
+  const dc = $('#decoChecks');
+  for(const k in DECO_LABEL){ const l=document.createElement('label'); l.className='chk';
+    l.innerHTML=`<input type="checkbox" data-k="${k}">${DECO_LABEL[k]}`; dc.appendChild(l);
+    l.querySelector('input').onchange=e=>{ state.decor[k]=e.target.checked?1:0; drawDecor(); save(); }; }
+  const oc = $('#optChecks');
+  for(const k in OPT_LABEL){ const l=document.createElement('label'); l.className='chk';
+    l.innerHTML=`<input type="checkbox" data-k="${k}">${OPT_LABEL[k]}`; oc.appendChild(l);
+    l.querySelector('input').onchange=e=>{ state.opts[k]=e.target.checked?1:0; applyOpts(); save(); }; }
+  $('#decoColor').oninput = e=>{ state.decor.color = e.target.value; drawDecor(); };
+  $('#decoColor').onchange = save;
+  $('#decoReset').onclick = ()=>{ state.decor = {...THEMES[state.theme].decor}; syncUI(); drawDecor(); save(); };
+})();
+
+/* ---------- 텍스트 편집 ---------- */
+let savedRange = null, lastBox = null;
+const edOf = n => { const el = n && (n.nodeType===3 ? n.parentElement : n); return el && el.closest ? el.closest('[contenteditable="true"]') : null; };
+document.addEventListener('selectionchange', ()=>{
+  const s = getSelection(); if(!s.rangeCount) return; const r = s.getRangeAt(0); const ed = edOf(r.commonAncestorContainer);
+  if(ed && stage.contains(ed)){ savedRange = r.cloneRange(); lastBox = ed; syncTitleButtons(); }
+});
+function restore(){
+  if(!savedRange || !lastBox || !document.body.contains(lastBox)) return false;
+  lastBox.focus({preventScroll:true}); const s = getSelection(); s.removeAllRanges(); s.addRange(savedRange); return true;
+}
+document.querySelectorAll('.panel-col button, .panel-col .th').forEach(b=> b.addEventListener('mousedown', e=> e.preventDefault()));
+function cmd(name, val){ if(!restore()) { setStatus('먼저 편집할 글자를 클릭하거나 드래그하세요'); return; }
+  document.execCommand('styleWithCSS', false, true); document.execCommand(name, false, val); save(); }
+document.querySelectorAll('[data-cmd]').forEach(b=> b.onclick = ()=> cmd(b.dataset.cmd));
+$('#colorApply').onclick = ()=> cmd('foreColor', $('#colorIn').value);
+
+const FONT_STACK = {'Pretendard':"'Pretendard',sans-serif", 'Paperlogy':"'Paperlogy','Pretendard',sans-serif", 'Galmuri11':"'Galmuri11','Pretendard',monospace", 'Nanum Myeongjo':"'Nanum Myeongjo',serif"};
+$('#fontSel').onchange = e=>{
+  const f = e.target.value;
+  if(!restore()){ setStatus('글 상자를 먼저 클릭하세요 (또는 [전체 적용])'); return; }
+  const s = getSelection();
+  if(s.rangeCount && !s.getRangeAt(0).collapsed){ document.execCommand('styleWithCSS',false,true); document.execCommand('fontName',false,f); setStatus('선택한 글자에 폰트 적용'); }
+  else { lastBox.style.fontFamily = FONT_STACK[f]; setStatus('이 글 상자 전체에 폰트 적용'); }
+  save();
+};
+$('#fontAll').onclick = ()=>{
+  const f = FONT_STACK[$('#fontSel').value];
+  scene.querySelectorAll('.win [contenteditable="true"], .popup [contenteditable="true"]').forEach(el=>{ el.style.fontFamily = f; el.querySelectorAll('[style*="font-family"]').forEach(x=>x.style.fontFamily=''); });
+  setStatus('창 안의 모든 글에 폰트 적용'); save();
+};
+function fontSize(d){
+  if(!lastBox || !document.body.contains(lastBox)){ setStatus('글 상자를 먼저 클릭하세요'); return; }
+  const cur = parseFloat(getComputedStyle(lastBox).fontSize); lastBox.style.fontSize = Math.max(8, Math.min(40, cur + d)) + 'px';
+  setStatus('글자 크기 ' + lastBox.style.fontSize); save();
+}
+$('#sizeUp').onclick = ()=> fontSize(1); $('#sizeDown').onclick = ()=> fontSize(-1);
+
+/* 타이틀 */
+function ttlAt(node){ const el = node && (node.nodeType===3? node.parentElement : node); return el && el.closest ? el.closest('.ttl') : null; }
+function unwrap(el){ const p = el.parentNode; while(el.firstChild) p.insertBefore(el.firstChild, el); p.removeChild(el); }
+function curTtl(){ if(!savedRange) return null; return ttlAt(savedRange.startContainer) || ttlAt(savedRange.endContainer); }
+function syncTitleButtons(){
+  const t = curTtl(); const box = t ? (['b-none','b-square','b-round','b-fsquare','b-fround'].find(c=>t.classList.contains(c))||'b-none') : titleBox;
+  const size = t ? (['s-s','s-m','s-l'].find(c=>t.classList.contains(c))||'s-m') : titleSize;
+  document.querySelectorAll('.tbox-btn').forEach(b=>b.classList.toggle('on', b.dataset.box===box));
+  document.querySelectorAll('.tsize-btn').forEach(b=>b.classList.toggle('on', b.dataset.size===size));
+}
+$('#ttlBtn').onclick = ()=>{
+  if(!restore()){ setStatus('타이틀로 만들 글자를 드래그해서 선택하세요'); return; }
+  const s = getSelection(), r = s.getRangeAt(0); const t = ttlAt(r.startContainer) || ttlAt(r.endContainer);
+  if(t){ unwrap(t); setStatus('타이틀 해제'); save(); return; }
+  if(r.collapsed){ setStatus('타이틀로 만들 글자를 드래그해서 선택하세요'); return; }
+  const span = document.createElement('span'); span.className = `ttl ${titleBox} ${titleSize}`;
+  span.appendChild(r.extractContents()); span.querySelectorAll('.ttl').forEach(unwrap);
+  r.insertNode(span); const nr = document.createRange(); nr.selectNodeContents(span); s.removeAllRanges(); s.addRange(nr);
+  setStatus('타이틀 적용'); save();
+};
+document.querySelectorAll('.tbox-btn').forEach(b=> b.onclick = ()=>{
+  titleBox = b.dataset.box; const t = curTtl();
+  if(t){ t.classList.remove('b-none','b-square','b-round','b-fsquare','b-fround'); t.classList.add(titleBox); save(); }
+  syncTitleButtons(); });
+document.querySelectorAll('.tsize-btn').forEach(b=> b.onclick = ()=>{
+  titleSize = b.dataset.size; const t = curTtl();
+  if(t){ t.classList.remove('s-s','s-m','s-l'); t.classList.add(titleSize); save(); }
+  syncTitleButtons(); });
+
+/* 붙여넣기는 순수 텍스트로, 한 줄 칸은 엔터 막기 */
+stage.addEventListener('paste', e=>{ const ed = edOf(e.target); if(!ed) return; e.preventDefault();
+  const t = (e.clipboardData||window.clipboardData).getData('text/plain'); document.execCommand('insertText', false, ed.classList.contains('single') ? t.replace(/\s*\n\s*/g,' ') : t); });
+stage.addEventListener('keydown', e=>{ if(e.key==='Enter' && e.target.classList && e.target.classList.contains('single')) e.preventDefault(); });
+stage.addEventListener('input', save);
+
+/* ---------- 이미지 ---------- */
+function readImage(file, maxSide, cb){
+  const fr = new FileReader();
+  fr.onload = ()=>{ const img = new Image(); img.onload = ()=>{
+      const k = Math.min(1, maxSide / Math.max(img.width, img.height));
+      if(k===1 && file.size < 1.2e6) return cb(fr.result, img.width, img.height);
+      const c = document.createElement('canvas'); c.width = Math.round(img.width*k); c.height = Math.round(img.height*k);
+      c.getContext('2d').drawImage(img,0,0,c.width,c.height);
+      const type = file.type==='image/jpeg' ? 'image/jpeg' : 'image/png';
+      cb(c.toDataURL(type, .9), c.width, c.height); };
+    img.src = fr.result; };
+  fr.readAsDataURL(file);
+}
+const pic = ()=> scene.querySelector('#pic');
+function setPicPos(){ const p = pic(); if(!p) return; p.style.backgroundPosition = `${$('#picX').value}% ${$('#picY').value}%`; }
+$('#picBtn').onclick = ()=> $('#picFile').click();
+$('#picFile').onchange = e=>{ const f = e.target.files[0]; if(!f) return;
+  readImage(f, 1600, url=>{ const p = pic(); p.style.backgroundImage = `url("${url}")`; p.classList.add('has');
+    p.style.backgroundSize = p.dataset.fit==='contain' ? 'contain' : 'cover'; setPicPos(); save(); setStatus('사진 적용 완료'); });
+  e.target.value=''; };
+$('#picFit').onclick = ()=>{ const p = pic(); p.dataset.fit = p.dataset.fit==='contain' ? 'cover' : 'contain';
+  p.style.backgroundSize = p.dataset.fit; setStatus(p.dataset.fit==='cover' ? '채우기 (꽉 차게)' : '맞추기 (전체 보이게)'); save(); };
+$('#picDel').onclick = ()=>{ const p = pic(); p.style.backgroundImage=''; p.classList.remove('has'); save(); };
+$('#picX').oninput = $('#picY').oninput = ()=>{ setPicPos(); }; $('#picX').onchange = $('#picY').onchange = save;
+
+$('#stkBtn').onclick = ()=> $('#stkFile').click();
+$('#stkFile').onchange = e=>{ [...e.target.files].forEach((f,i)=> readImage(f, 1000, (url,w,h)=>{
+    const sw = Math.min(220, w), x = W/2 - sw/2 + i*24, y = H/2 - (sw*h/w)/2 + i*24;
+    scene.insertAdjacentHTML('beforeend', `<div class="obj sticker" data-type="sticker" data-rot="0" style="left:${x}px;top:${y}px;width:${sw}px;z-index:${topZ()+1}"><img src="${url}" alt="" draggable="false">${H_HANDLES.sticker}</div>`);
+    select(scene.lastElementChild); save(); }));
+  e.target.value=''; setStatus('스티커 추가 — 드래그해서 옮기세요'); };
+
+$('#wallBtn').onclick = ()=> $('#wallFile').click();
+$('#wallFile').onchange = e=>{ const f = e.target.files[0]; if(!f) return;
+  readImage(f, 1800, url=>{ state.wallImg = url; state.wall = 'custom'; drawWall(); save(); setStatus('바탕화면을 내 사진으로 바꿨어요'); });
+  e.target.value=''; };
+$('#wallReset').onclick = ()=>{ state.wall = 'theme'; drawWall(); save(); setStatus('시안 기본 배경으로 돌아왔어요'); };
+['wallX','wallY','wallDim'].forEach(k=>{ $('#'+k).oninput = e=>{ state[k] = +e.target.value; drawWall(); }; $('#'+k).onchange = save; });
+
+/* ---------- 개체 선택/이동 ---------- */
+let sel = null;
+function select(o){ if(sel) sel.classList.remove('sel'); sel = o; if(o){ o.classList.add('sel');
+  if(o.dataset.type==='divider'){ $('#divStyle').value = o.dataset.style||'solid'; $('#divW').value = parseInt(o.style.getPropertyValue('--dw'))||2; } } }
+const objs = ()=> [...scene.querySelectorAll('.obj')];
+const zOf = o => parseInt(o.style.zIndex)||20;
+function topZ(){ return Math.max(100, ...objs().map(zOf)); }
+
+let act = null;
+stage.addEventListener('pointerdown', e=>{
+  const o = e.target.closest('.obj');
+  if(!o){ select(null);
+    if(e.target.closest('#pic') && !e.target.closest('[contenteditable="true"]')) $('#picFile').click();
+    return; }
+  const h = e.target.closest('.h');
+  select(o);
+  if(h && h.classList.contains('h-del')){ e.preventDefault(); o.remove(); sel=null; save(); setStatus('삭제됨'); return; }
+  if(!h){
+    if(e.target.closest('[contenteditable="true"]')) return;
+    if(o.dataset.type==='popup' && !e.target.closest('.pop-title')) return;
+  }
+  e.preventDefault();
+  if(document.activeElement && document.activeElement.blur) document.activeElement.blur();
+  const mode = !h ? 'move' : h.classList.contains('h-rot') ? 'rot' : 'resize';
+  const rc = o.getBoundingClientRect();
+  act = {o, mode, sx:e.clientX, sy:e.clientY, l:parseFloat(o.style.left), t:parseFloat(o.style.top),
+    w:o.offsetWidth, h:o.offsetHeight, rot:parseFloat(o.dataset.rot||0),
+    cx:rc.left+rc.width/2, cy:rc.top+rc.height/2};
+  if(mode==='rot') act.a0 = Math.atan2(e.clientY-act.cy, e.clientX-act.cx);
+});
+window.addEventListener('pointermove', e=>{
+  if(!act) return; const {o} = act; const dx = (e.clientX-act.sx)/scale, dy = (e.clientY-act.sy)/scale;
+  if(act.mode==='move'){ o.style.left = Math.round(act.l+dx)+'px'; o.style.top = Math.round(act.t+dy)+'px'; }
+  else if(act.mode==='resize'){
+    const t = o.dataset.type;
+    if(t==='divider'){ if(o.dataset.orient==='h') o.style.width = Math.max(20, act.w+dx)+'px'; else o.style.height = Math.max(20, act.h+dy)+'px'; }
+    else if(t==='popup'){ o.style.width = Math.max(140, act.w+dx)+'px'; }
+    else { o.style.width = Math.max(24, act.w + Math.max(dx,dy*act.w/act.h))+'px'; }
+  } else if(act.mode==='rot'){
+    let deg = act.rot + (Math.atan2(e.clientY-act.cy, e.clientX-act.cx) - act.a0)*180/Math.PI;
+    if(e.shiftKey) deg = Math.round(deg/15)*15;
+    o.dataset.rot = deg.toFixed(1); o.style.transform = `rotate(${deg.toFixed(1)}deg)`;
+  }
+});
+window.addEventListener('pointerup', ()=>{ if(act){ act=null; save(); } });
+document.addEventListener('keydown', e=>{
+  if(!sel) return; const ae = document.activeElement; if(ae && (ae.isContentEditable || /INPUT|SELECT|TEXTAREA/.test(ae.tagName))) return;
+  if(e.key==='Delete' || e.key==='Backspace'){ e.preventDefault(); sel.remove(); sel=null; save(); return; }
+  const step = e.shiftKey?10:1, m = {ArrowLeft:[-step,0],ArrowRight:[step,0],ArrowUp:[0,-step],ArrowDown:[0,step]}[e.key];
+  if(m){ e.preventDefault(); sel.style.left = parseFloat(sel.style.left)+m[0]+'px'; sel.style.top = parseFloat(sel.style.top)+m[1]+'px'; save(); }
+});
+
+/* 구분선 */
+function addDivider(orient){
+  const win = stagePt(scene.querySelector('.main') || stage);
+  const x = orient==='h' ? win.x + 26 : win.x + win.w/2, y = orient==='h' ? win.y + win.h/2 : win.y + 60;
+  const len = orient==='h' ? win.w - 52 : 200;
+  scene.insertAdjacentHTML('beforeend', dividerHTML(Math.round(x), Math.round(y), Math.round(len), orient, $('#divStyle').value, $('#divW').value));
+  select(scene.lastElementChild); save(); setStatus('구분선 추가 — 드래그해서 옮기세요');
+}
+$('#addH').onclick = ()=> addDivider('h'); $('#addV').onclick = ()=> addDivider('v');
+const selDiv = ()=> sel && sel.dataset.type==='divider' ? sel : null;
+$('#divStyle').onchange = e=>{ const d = selDiv(); if(d){ d.dataset.style = e.target.value; save(); } };
+$('#divW').onchange = e=>{ const d = selDiv(); if(d){ d.style.setProperty('--dw', e.target.value+'px'); save(); } };
+$('#divColorApply').onclick = ()=>{ const d = selDiv(); if(!d) return setStatus('구분선을 먼저 클릭해서 선택하세요'); d.style.setProperty('--dc', $('#divColor').value); save(); };
+$('#divColorReset').onclick = ()=>{ const d = selDiv(); if(!d) return setStatus('구분선을 먼저 클릭해서 선택하세요'); d.style.removeProperty('--dc'); save(); };
+
+/* 팝업·순서·복제·삭제 */
+$('#popAdd').onclick = ()=>{ scene.insertAdjacentHTML('beforeend', popupHTML($('#popKind').value, 470, 300, 230, topZ()+1)); select(scene.lastElementChild); save(); };
+$('#zUp').onclick = ()=>{ if(!sel) return setStatus('개체를 먼저 선택하세요'); sel.style.zIndex = topZ()+1; save(); };
+$('#zDown').onclick = ()=>{ if(!sel) return setStatus('개체를 먼저 선택하세요'); sel.style.zIndex = Math.max(12, Math.min(20, ...objs().map(zOf)) - 1); save(); setStatus('맨 뒤로 (창 뒤쪽)'); };
+$('#dup').onclick = ()=>{ if(!sel) return setStatus('개체를 먼저 선택하세요'); const c = sel.cloneNode(true); c.classList.remove('sel');
+  c.style.left = parseFloat(sel.style.left)+20+'px'; c.style.top = parseFloat(sel.style.top)+20+'px'; c.style.zIndex = topZ()+1; scene.appendChild(c); select(c); save(); };
+$('#del').onclick = ()=>{ if(!sel) return setStatus('개체를 먼저 선택하세요'); sel.remove(); sel=null; save(); };
+
+/* ---------- 저장(로컬) ---------- */
+let saveT = null;
+function save(){ clearTimeout(saveT); saveT = setTimeout(()=>{
+  try{ const cl = scene.cloneNode(true); cl.querySelectorAll('.sel').forEach(e=>e.classList.remove('sel'));
+    localStorage.setItem(KEY, JSON.stringify({v:1, state, html:cl.innerHTML})); }
+  catch(err){ setStatus('⚠ 자동 저장 용량 초과 — 새로고침하면 사진이 사라질 수 있어요'); }
+}, 500); }
+function load(){ try{ const d = JSON.parse(localStorage.getItem(KEY)||'null'); if(d && d.html && d.state){ state = {...state, ...d.state, opts:{...state.opts, ...d.state.opts}}; if(!THEMES[state.theme]){ state.theme='luna'; state.decor={...THEMES.luna.decor}; } scene.innerHTML = d.html; return true; } }catch(e){} return false; }
+function fresh(){
+  scene.innerHTML = defaultScene();
+  requestAnimationFrame(()=>{ const b1 = stagePt(scene.querySelector('#box1')), main = stagePt(scene.querySelector('.main'));
+    scene.insertAdjacentHTML('beforeend', dividerHTML(Math.round(main.x+26), Math.round(b1.y+b1.h+5), Math.round(main.w-52), 'h', 'solid', 2));
+    save(); });
+}
+$('#resetBtn').onclick = ()=>{ if(!confirm('모든 내용을 지우고 처음 상태로 돌릴까요?')) return;
+  state = {theme:state.theme, decor:{...THEMES[state.theme].decor}, opts:{icons:1,task:1,back:0,cursor:1}, wall:'theme', wallImg:null, wallX:50, wallY:50, wallDim:0}; fresh(); applyTheme(state.theme,false); setStatus('초기화 완료'); };
+
+/* ---------- PNG 저장 ---------- */
+$('#saveBtn').onclick = async ()=>{
+  if(typeof html2canvas === 'undefined'){ alert('저장 도구(html2canvas)를 불러오지 못했어요. 인터넷 연결을 확인하고 새로고침해 주세요.'); return; }
+  select(null); if(document.activeElement) document.activeElement.blur(); getSelection().removeAllRanges();
+  setStatus('PNG 만드는 중...'); $('#saveBtn').disabled = true;
+  const sx = window.scrollX, sy = window.scrollY;
+  stage.classList.add('exporting'); stage.style.transform = 'none'; wrap.style.overflow = 'visible';
+  try{
+    if(document.fonts && document.fonts.ready) await document.fonts.ready;
+    window.scrollTo(0,0);
+    const canvas = await html2canvas(stage, {scale: +$('#scaleSel').value, backgroundColor:null, useCORS:true, logging:false, width:W, height:H, scrollX:0, scrollY:0, windowWidth:Math.max(document.documentElement.clientWidth, 1400)});
+    const url = canvas.toDataURL('image/png');
+    $('#resultImg').src = url; $('#dlLink').href = url; $('#modal').classList.add('show');
+    try{ const a = document.createElement('a'); a.href = url; a.download = 'profile_setup.png'; document.body.appendChild(a); a.click(); a.remove(); }catch(e){}
+    setStatus('저장 완료!');
+  }catch(err){ console.error(err); alert('저장 중 오류가 났어요: ' + err.message); setStatus('저장 실패'); }
+  finally{ stage.classList.remove('exporting'); wrap.style.overflow = ''; fit(); window.scrollTo(sx,sy); $('#saveBtn').disabled = false; }
+};
+$('#closeModal').onclick = ()=> $('#modal').classList.remove('show');
+$('#modal').onclick = e=>{ if(e.target.id==='modal') $('#modal').classList.remove('show'); };
+
+/* ---------- 시작 ---------- */
+fit();
+const had = load();
+if(!had) fresh();
+applyTheme(state.theme, false);
+const p = pic(); if(p){ const m = /([\d.]+)% ([\d.]+)%/.exec(p.style.backgroundPosition||''); if(m){ $('#picX').value=m[1]; $('#picY').value=m[2]; } }
+if(document.fonts) document.fonts.ready.then(drawDecor);
+setStatus(had ? '이전 작업을 불러왔어요' : '준비됨 — 글자를 클릭해서 편집하세요');
+})();
+</script>
+</body>
+</html>
