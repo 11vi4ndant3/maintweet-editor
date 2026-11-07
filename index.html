@@ -13,7 +13,12 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700;800&display=swap">
 <style>
 @font-face{font-family:'DungGeunMo';font-weight:400;font-style:normal;font-display:swap;
-  src:url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_six@1.2/DungGeunMo.woff') format('woff');}
+  src:url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_six@1.2/DungGeunMo.woff') format('woff');size-adjust:122%;}
+/* 갈무리: 크기를 살짝 줄인 버전 */
+@font-face{font-family:'GalmuriDot';font-weight:400;font-style:normal;font-display:swap;size-adjust:88%;
+  src:url('https://cdn.jsdelivr.net/npm/galmuri@latest/dist/Galmuri11.woff2') format('woff2');}
+@font-face{font-family:'GalmuriDot';font-weight:700;font-style:normal;font-display:swap;size-adjust:88%;
+  src:url('https://cdn.jsdelivr.net/npm/galmuri@latest/dist/Galmuri11-Bold.woff2') format('woff2');}
 @font-face{font-family:'Paperlogy';font-weight:400;font-style:normal;font-display:swap;
   src:url('https://cdn.jsdelivr.net/gh/projectnoonnu/2408-3@1.0/Paperlogy-4Regular.woff2') format('woff2');}
 @font-face{font-family:'Paperlogy';font-weight:700;font-style:normal;font-display:swap;
@@ -160,9 +165,12 @@ input[type=range]{flex:1;min-width:80px}
 .tbox{flex:1 1 0;min-height:0;overflow:hidden;font-size:14px;line-height:1.6;word-break:keep-all;overflow-wrap:anywhere;padding:2px}
 .tgap{height:26px;flex:none}
 
-.ttl{display:inline-block;font-weight:800;font-size:1.6em;line-height:1.25;color:var(--titlecolor);margin:1px 0;letter-spacing:-.01em}
+.ttl{display:inline-block;font-weight:800;font-size:1.4em;line-height:1.25;color:var(--titlecolor);margin:1px 0;letter-spacing:-.01em}
+.bl{position:relative;padding-left:1.15em}
+.bl::before{content:"";position:absolute;left:.3em;top:.62em;width:.38em;height:.38em;border-radius:50%;background:var(--accent)}
+.ttl.s-xs{font-size:1.05em}
 .ttl.s-s{font-size:1.2em}
-.ttl.s-l{font-size:2.05em}
+.ttl.s-l{font-size:1.8em}
 .ttl.b-square{border:2px solid var(--accent);padding:.08em .45em}
 .ttl.b-round{border:2px solid var(--accent);padding:.08em .6em;border-radius:.75em}
 .ttl.b-fsquare{background:var(--accent);color:var(--onaccent);padding:.1em .45em}
@@ -298,7 +306,7 @@ input[type=range]{flex:1;min-width:80px}
             <select id="fontSel">
               <option value="Pretendard">프리텐다드</option>
               <option value="Paperlogy">페이퍼로지</option>
-              <option value="Galmuri11">도트 (갈무리)</option>
+              <option value="GalmuriDot">도트 (갈무리)</option>
               <option value="Nanum Myeongjo">명조 (나눔명조)</option>
               <option value="DungGeunMo">둥근모 (옛날 윈도우 PC)</option>
             </select>
@@ -308,6 +316,7 @@ input[type=range]{flex:1;min-width:80px}
             <button class="b ico" data-cmd="bold" title="굵게"><b>B</b></button>
             <button class="b ico" data-cmd="italic" title="기울임"><i style="font-family:serif">I</i></button>
             <button class="b ico" data-cmd="underline" title="밑줄"><u>U</u></button>
+            <button class="b" id="bulletBtn" title="말머리 (동그라미)">● 말머리</button>
             <button class="b ico" data-cmd="justifyLeft" title="왼쪽 정렬">⇤</button>
             <button class="b ico" data-cmd="justifyCenter" title="가운데 정렬">≡</button>
             <input type="color" id="colorIn" value="#e2357f" title="글자 색">
@@ -331,10 +340,12 @@ input[type=range]{flex:1;min-width:80px}
             <button class="b tbox-btn" data-box="b-fround">채운 둥근</button>
           </div>
           <div class="row"><label class="t">타이틀 크기</label>
+            <button class="b tsize-btn" data-size="s-xs">아주 작게</button>
             <button class="b tsize-btn" data-size="s-s">작게</button>
             <button class="b tsize-btn on" data-size="s-m">보통</button>
             <button class="b tsize-btn" data-size="s-l">크게</button>
           </div>
+          <p class="hint"><b>말머리</b>: 줄에 커서를 두거나 여러 줄을 선택하고 [● 말머리]. 엔터 = 다음 말머리, <b>Shift+엔터</b> = 말머리 없이 들여쓴 줄바꿈, 빈 말머리에서 엔터 = 말머리 끝내기.</p>
           <p class="hint">글자를 드래그해서 선택한 뒤 버튼을 누르세요. 타이틀 안에 커서를 두고 박스/크기 버튼을 누르면 그 타이틀만 바뀌어요.</p>
         </fieldset>
 
@@ -918,7 +929,7 @@ function cmd(name, val){ if(!restore()) { setStatus('먼저 편집할 글자를 
 document.querySelectorAll('[data-cmd]').forEach(b=> b.onclick = ()=> cmd(b.dataset.cmd));
 $('#colorApply').onclick = ()=> cmd('foreColor', $('#colorIn').value);
 
-const FONT_STACK = {'Pretendard':"'Pretendard',sans-serif", 'Paperlogy':"'Paperlogy','Pretendard',sans-serif", 'Galmuri11':"'Galmuri11','Pretendard',monospace", 'Nanum Myeongjo':"'Nanum Myeongjo',serif", 'DungGeunMo':"'DungGeunMo','Galmuri11','Pretendard',monospace"};
+const FONT_STACK = {'Pretendard':"'Pretendard',sans-serif", 'Paperlogy':"'Paperlogy','Pretendard',sans-serif", 'GalmuriDot':"'GalmuriDot','Galmuri11','Pretendard',monospace", 'Nanum Myeongjo':"'Nanum Myeongjo',serif", 'DungGeunMo':"'DungGeunMo','Galmuri11','Pretendard',monospace"};
 $('#fontSel').onchange = e=>{
   const f = e.target.value;
   if(!restore()){ setStatus('글 상자를 먼저 클릭하세요 (또는 [전체 적용])'); return; }
@@ -940,13 +951,45 @@ function fontSize(d){
 }
 $('#sizeUp').onclick = ()=> fontSize(1); $('#sizeDown').onclick = ()=> fontSize(-1);
 
+/* 말머리 */
+function topBlock(node, root){ let n = node; while(n && n.parentNode !== root) n = n.parentNode; return n; }
+function wrapInline(n, root){
+  if(n.nodeType===1 && /^(DIV|P|UL|OL|H\d)$/.test(n.tagName)) return n;
+  let start = n; while(start.previousSibling && !(start.previousSibling.nodeType===1 && /^(DIV|P|BR)$/.test(start.previousSibling.tagName))) start = start.previousSibling;
+  const div = document.createElement('div'); root.insertBefore(div, start);
+  let cur = start; while(cur && !(cur.nodeType===1 && /^(DIV|P)$/.test(cur.tagName))){ const nx = cur.nextSibling; const isBr = cur.nodeType===1 && cur.tagName==='BR'; div.appendChild(cur); cur = nx; if(isBr) break; }
+  return div;
+}
+$('#bulletBtn').onclick = ()=>{
+  if(!restore()){ setStatus('말머리를 넣을 줄을 먼저 클릭하세요'); return; }
+  const root = lastBox, r = getSelection().getRangeAt(0);
+  if(root.classList.contains('single')){ setStatus('한 줄 칸에는 말머리를 넣을 수 없어요'); return; }
+  let blocks = [];
+  if(r.collapsed){ const tb = topBlock(r.startContainer, root); blocks = tb ? [tb] : []; }
+  else blocks = [...root.childNodes].filter(n=> r.intersectsNode(n) && !(n.nodeType===3 && !n.textContent.trim()));
+  if(!blocks.length && r.startContainer===root){ const d = document.createElement('div'); d.innerHTML='<br>'; root.appendChild(d); blocks=[d]; }
+  const saved = r.cloneRange();
+  blocks = [...new Set(blocks.map(b=> wrapInline(b, root)))].filter(b=> !(b.classList && b.classList.contains('ttl')));
+  if(!blocks.length) return;
+  const allOn = blocks.every(b=> b.classList.contains('bl'));
+  blocks.forEach(b=> b.classList.toggle('bl', !allOn));
+  try{ const s = getSelection(); s.removeAllRanges(); s.addRange(saved); }catch(e){}
+  setStatus(allOn ? '말머리 해제' : '말머리 적용'); save();
+};
+stage.addEventListener('keydown', e=>{
+  if(e.key!=='Enter' || e.shiftKey || e.isComposing) return;
+  const s = getSelection(); if(!s.rangeCount) return; const ed = edOf(s.anchorNode); if(!ed || ed.classList.contains('single')) return;
+  const tb = topBlock(s.anchorNode, ed);
+  if(tb && tb.nodeType===1 && tb.classList.contains('bl') && !tb.textContent.replace(/\u200b/g,'').trim()){ e.preventDefault(); tb.classList.remove('bl'); save(); }
+});
+
 /* 타이틀 */
 function ttlAt(node){ const el = node && (node.nodeType===3? node.parentElement : node); return el && el.closest ? el.closest('.ttl') : null; }
 function unwrap(el){ const p = el.parentNode; while(el.firstChild) p.insertBefore(el.firstChild, el); p.removeChild(el); }
 function curTtl(){ if(!savedRange) return null; return ttlAt(savedRange.startContainer) || ttlAt(savedRange.endContainer); }
 function syncTitleButtons(){
   const t = curTtl(); const box = t ? (['b-none','b-square','b-round','b-fsquare','b-fround'].find(c=>t.classList.contains(c))||'b-none') : titleBox;
-  const size = t ? (['s-s','s-m','s-l'].find(c=>t.classList.contains(c))||'s-m') : titleSize;
+  const size = t ? (['s-xs','s-s','s-m','s-l'].find(c=>t.classList.contains(c))||'s-m') : titleSize;
   document.querySelectorAll('.tbox-btn').forEach(b=>b.classList.toggle('on', b.dataset.box===box));
   document.querySelectorAll('.tsize-btn').forEach(b=>b.classList.toggle('on', b.dataset.size===size));
 }
@@ -966,7 +1009,7 @@ document.querySelectorAll('.tbox-btn').forEach(b=> b.onclick = ()=>{
   syncTitleButtons(); });
 document.querySelectorAll('.tsize-btn').forEach(b=> b.onclick = ()=>{
   titleSize = b.dataset.size; const t = curTtl();
-  if(t){ t.classList.remove('s-s','s-m','s-l'); t.classList.add(titleSize); save(); }
+  if(t){ t.classList.remove('s-xs','s-s','s-m','s-l'); t.classList.add(titleSize); save(); }
   syncTitleButtons(); });
 
 /* 붙여넣기는 순수 텍스트로, 한 줄 칸은 엔터 막기 */
