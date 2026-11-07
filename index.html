@@ -12,6 +12,8 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700;800&display=swap">
 <style>
+@font-face{font-family:'DungGeunMo';font-weight:400;font-style:normal;font-display:swap;
+  src:url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_six@1.2/DungGeunMo.woff') format('woff');}
 @font-face{font-family:'Paperlogy';font-weight:400;font-style:normal;font-display:swap;
   src:url('https://cdn.jsdelivr.net/gh/projectnoonnu/2408-3@1.0/Paperlogy-4Regular.woff2') format('woff2');}
 @font-face{font-family:'Paperlogy';font-weight:700;font-style:normal;font-display:swap;
@@ -94,7 +96,7 @@ input[type=range]{flex:1;min-width:80px}
 
 /* ================= 스테이지 (PNG로 저장되는 영역) ================= */
 #stage{position:relative;width:1200px;height:800px;overflow:hidden;transform-origin:0 0;
-  font-family:'Pretendard',sans-serif;color:var(--text);
+  font-family:var(--uifont,'Pretendard',sans-serif);color:var(--text);
   --inv:1;
 }
 #stage canvas.layer{position:absolute;left:0;top:0;width:1200px;height:800px;pointer-events:none}
@@ -110,7 +112,7 @@ input[type=range]{flex:1;min-width:80px}
 .desk-icons{position:absolute;left:14px;top:14px;z-index:15;display:flex;flex-direction:column;gap:14px;width:86px}
 .dicon{display:flex;flex-direction:column;align-items:center;gap:3px;text-align:center}
 .dicon img{width:40px;height:40px;display:block}
-.dicon span{color:#fff;font:12px 'Tahoma','Pretendard',sans-serif;line-height:1.2;text-shadow:1px 1px 1px #000,0 0 2px #000;padding:1px 3px;min-width:20px}
+.dicon span{color:#fff;font:12px var(--uifont,'Tahoma','Pretendard',sans-serif);line-height:1.2;text-shadow:1px 1px 1px #000,0 0 2px #000;padding:1px 3px;min-width:20px}
 #stage.hide-icons .desk-icons{display:none}
 
 /* 메인 창 */
@@ -122,7 +124,7 @@ input[type=range]{flex:1;min-width:80px}
 .win-tb{height:30px;flex:none;display:flex;align-items:center;gap:6px;padding:0 5px 0 7px;
   background:var(--tb);border-radius:var(--wr) var(--wr) 0 0;margin:0 -3px;border:1px solid var(--frame);border-bottom:0}
 .tb-ico{width:17px;height:17px;flex:none}
-.tb-title{color:var(--tbtext);font:700 13.5px 'Trebuchet MS','Pretendard',sans-serif;text-shadow:var(--tbshadow);white-space:nowrap;padding:0 2px}
+.tb-title{color:var(--tbtext);font:700 13.5px var(--uifont,'Trebuchet MS','Pretendard',sans-serif);text-shadow:var(--tbshadow);white-space:nowrap;padding:0 2px}
 .tb-btns{margin-left:auto;display:flex;gap:2px}
 .tbb{width:22px;height:22px;border-radius:3px;border:1px solid var(--tbbbd);background:var(--tbb);position:relative;display:block}
 .tbb.min::after{content:"";position:absolute;left:5px;bottom:5px;width:8px;height:3px;background:var(--tbbglyph)}
@@ -151,7 +153,7 @@ input[type=range]{flex:1;min-width:80px}
 
 .main{flex:1;min-width:0;display:flex;flex-direction:column;padding:20px 26px 14px 26px;color:var(--text)}
 .idrow{display:flex;align-items:center;gap:8px;flex:none;margin-bottom:14px}
-.idrow .lbl{font:700 12px 'Tahoma','Pretendard',sans-serif;color:var(--sub);white-space:nowrap}
+.idrow .lbl{font:700 12px var(--uifont,'Tahoma','Pretendard',sans-serif);color:var(--sub);white-space:nowrap}
 .idrow .field{flex:1;min-width:0;height:26px;line-height:24px;padding:0 7px;font-size:13.5px;white-space:nowrap;overflow:hidden;
   background:var(--fieldbg);border:1px solid var(--fieldbd);color:var(--fieldtext);border-radius:var(--fr)}
 .idrow .field.idf{flex:.8}
@@ -168,10 +170,10 @@ input[type=range]{flex:1;min-width:80px}
 
 .win-foot{height:60px;flex:none;display:flex;align-items:center;gap:10px;padding:0 14px 0 16px;background:var(--footer);
   border-top:1px solid var(--footline);box-shadow:inset 0 1px 0 var(--footline2)}
-.foot-note{font:11px 'Tahoma','Pretendard',sans-serif;color:var(--foottext);opacity:.8;white-space:nowrap}
+.foot-note{font:11px var(--uifont,'Tahoma','Pretendard',sans-serif);color:var(--foottext);opacity:.8;white-space:nowrap}
 .btns{margin-left:auto;display:flex;gap:8px;align-items:center}
 .xbtn{position:relative;display:inline-flex;align-items:center;justify-content:center;min-width:88px;height:27px;padding:0 12px;
-  font:13px 'Tahoma','Pretendard',sans-serif;color:var(--btntext);
+  font:13px var(--uifont,'Tahoma','Pretendard',sans-serif);color:var(--btntext);
   border:1px solid var(--btnbd);border-radius:var(--br);background:var(--btnbg);box-shadow:var(--btnshadow);user-select:none}
 .xbtn.next{box-shadow:var(--btnshadow), inset 0 0 0 2px var(--btnfocus)}
 .xbtn .cur{position:absolute;left:52%;top:13px;width:17px;height:24px;pointer-events:none}
@@ -184,15 +186,15 @@ input[type=range]{flex:1;min-width:80px}
 .startbtn{height:36px;padding:0 22px 0 10px;display:flex;align-items:center;gap:6px;border-radius:0 15px 15px 0;
   background:var(--start);box-shadow:inset -2px 0 3px rgba(0,0,0,.25), 2px 0 4px rgba(0,0,0,.25)}
 .startbtn img{width:20px;height:20px}
-.startbtn span{color:var(--starttext);font:italic 700 19px 'Trebuchet MS','Pretendard',sans-serif;text-shadow:1px 1px 1px rgba(0,0,0,.5);padding-right:2px}
+.startbtn span{color:var(--starttext);font:italic 700 19px var(--uifont,'Trebuchet MS','Pretendard',sans-serif);text-shadow:1px 1px 1px rgba(0,0,0,.5);padding-right:2px}
 .taskitem{margin-left:12px;height:27px;width:200px;display:flex;align-items:center;gap:6px;padding:0 8px;border-radius:3px;
   background:var(--taskitem);border:1px solid rgba(0,0,0,.25);box-shadow:inset 1px 1px 2px rgba(0,0,0,.35);overflow:hidden}
 .taskitem img{width:15px;height:15px;flex:none}
-.taskitem span{color:var(--tasktext);font:12px 'Tahoma','Pretendard',sans-serif;white-space:nowrap;overflow:hidden}
+.taskitem span{color:var(--tasktext);font:12px var(--uifont,'Tahoma','Pretendard',sans-serif);white-space:nowrap;overflow:hidden}
 .tray{margin-left:auto;height:36px;display:flex;align-items:center;gap:7px;padding:0 12px 0 12px;background:var(--tray);
   border-left:1px solid rgba(0,0,0,.25);box-shadow:inset 1px 0 0 rgba(255,255,255,.25)}
 .tray i{width:14px;height:14px;border-radius:50%;display:block}
-.tray span{color:var(--traytext);font:12px 'Tahoma','Pretendard',sans-serif;white-space:nowrap;padding-left:4px}
+.tray span{color:var(--traytext);font:12px var(--uifont,'Tahoma','Pretendard',sans-serif);white-space:nowrap;padding-left:4px}
 #stage.hide-task .taskbar{display:none}
 
 /* ===== 개체(스티커/구분선/팝업) ===== */
@@ -238,7 +240,7 @@ input[type=range]{flex:1;min-width:80px}
   box-shadow:3px 4px 12px rgba(0,0,0,.35);color:var(--poptext)}
 .pop-title{height:23px;display:flex;align-items:center;gap:5px;padding:0 4px 0 6px;background:var(--tb);cursor:move;touch-action:none;
   border-radius:var(--wr) var(--wr) 0 0;margin:0 -2px;border:1px solid var(--frame);border-bottom:0}
-.pop-title .pt{color:var(--tbtext);font:700 11.5px 'Trebuchet MS','Pretendard',sans-serif;text-shadow:var(--tbshadow);white-space:nowrap;overflow:hidden;padding:0 2px}
+.pop-title .pt{color:var(--tbtext);font:700 11.5px var(--uifont,'Trebuchet MS','Pretendard',sans-serif);text-shadow:var(--tbshadow);white-space:nowrap;overflow:hidden;padding:0 2px}
 .pop-title .pi{width:13px;height:13px;flex:none}
 .pop-x{margin-left:auto;width:17px;height:17px;border-radius:3px;border:1px solid #fff;background:var(--tbclose);position:relative;flex:none}
 .pop-x::before,.pop-x::after{content:"";position:absolute;left:3px;top:7px;width:9px;height:2px;background:#fff;transform:rotate(45deg)}
@@ -298,8 +300,9 @@ input[type=range]{flex:1;min-width:80px}
               <option value="Paperlogy">페이퍼로지</option>
               <option value="Galmuri11">도트 (갈무리)</option>
               <option value="Nanum Myeongjo">명조 (나눔명조)</option>
+              <option value="DungGeunMo">둥근모 (옛날 윈도우 PC)</option>
             </select>
-            <button class="b" id="fontAll" title="모든 글 상자에 적용">전체 적용</button>
+            <button class="b" id="fontAll" title="화면의 모든 글자에 적용">전체 적용</button>
           </div>
           <div class="row">
             <button class="b ico" data-cmd="bold" title="굵게"><b>B</b></button>
@@ -620,7 +623,7 @@ THEMES.luna.name='01 LUNA BLUE'; THEMES.night.name='02 MIDNIGHT.EXE'; THEMES.cyb
 const DECO_LABEL = {grid:'그리드', floor:'바닥 그리드', rings:'HUD 링', hex:'데이터 코드', brackets:'코너 브래킷·라벨', sparkle:'반짝이', nodes:'네트워크 노드', scan:'스캔라인'};
 const OPT_LABEL = {icons:'바탕화면 아이콘', task:'작업 표시줄', back:'< Back 버튼', cursor:'마우스 커서'};
 
-let state = {theme:'luna', decor:{...THEMES.luna.decor}, opts:{icons:1, task:1, back:0, cursor:1}, wall:'theme', wallImg:null, wallX:50, wallY:50, wallDim:0};
+let state = {theme:'luna', decor:{...THEMES.luna.decor}, opts:{icons:1, task:1, back:0, cursor:1}, wall:'theme', wallImg:null, wallX:50, wallY:50, wallDim:0, uifont:''};
 let titleBox = 'b-none', titleSize = 's-m';
 
 /* ---------- 유틸 ---------- */
@@ -865,6 +868,7 @@ function syncUI(){
   document.querySelectorAll('#decoChecks input').forEach(i=> i.checked = !!state.decor[i.dataset.k]);
   document.querySelectorAll('#optChecks input').forEach(i=> i.checked = !!state.opts[i.dataset.k]);
   $('#decoColor').value = state.decor.color;
+  applyUiFont();
   $('#wallX').value = state.wallX; $('#wallY').value = state.wallY; $('#wallDim').value = state.wallDim;
   applyOpts();
 }
@@ -914,7 +918,7 @@ function cmd(name, val){ if(!restore()) { setStatus('먼저 편집할 글자를 
 document.querySelectorAll('[data-cmd]').forEach(b=> b.onclick = ()=> cmd(b.dataset.cmd));
 $('#colorApply').onclick = ()=> cmd('foreColor', $('#colorIn').value);
 
-const FONT_STACK = {'Pretendard':"'Pretendard',sans-serif", 'Paperlogy':"'Paperlogy','Pretendard',sans-serif", 'Galmuri11':"'Galmuri11','Pretendard',monospace", 'Nanum Myeongjo':"'Nanum Myeongjo',serif"};
+const FONT_STACK = {'Pretendard':"'Pretendard',sans-serif", 'Paperlogy':"'Paperlogy','Pretendard',sans-serif", 'Galmuri11':"'Galmuri11','Pretendard',monospace", 'Nanum Myeongjo':"'Nanum Myeongjo',serif", 'DungGeunMo':"'DungGeunMo','Galmuri11','Pretendard',monospace"};
 $('#fontSel').onchange = e=>{
   const f = e.target.value;
   if(!restore()){ setStatus('글 상자를 먼저 클릭하세요 (또는 [전체 적용])'); return; }
@@ -923,10 +927,11 @@ $('#fontSel').onchange = e=>{
   else { lastBox.style.fontFamily = FONT_STACK[f]; setStatus('이 글 상자 전체에 폰트 적용'); }
   save();
 };
+function applyUiFont(){ if(state.uifont) stage.style.setProperty('--uifont', state.uifont); else stage.style.removeProperty('--uifont'); }
 $('#fontAll').onclick = ()=>{
-  const f = FONT_STACK[$('#fontSel').value];
-  scene.querySelectorAll('.win [contenteditable="true"], .popup [contenteditable="true"]').forEach(el=>{ el.style.fontFamily = f; el.querySelectorAll('[style*="font-family"]').forEach(x=>x.style.fontFamily=''); });
-  setStatus('창 안의 모든 글에 폰트 적용'); save();
+  state.uifont = FONT_STACK[$('#fontSel').value]; applyUiFont();
+  scene.querySelectorAll('[contenteditable="true"]').forEach(el=>{ el.style.fontFamily = ''; el.querySelectorAll('[style*="font-family"]').forEach(x=>x.style.fontFamily=''); });
+  setStatus('화면의 모든 글자(작업 표시줄·아이콘·버튼 포함)에 폰트 적용'); save();
 };
 function fontSize(d){
   if(!lastBox || !document.body.contains(lastBox)){ setStatus('글 상자를 먼저 클릭하세요'); return; }
@@ -1099,7 +1104,7 @@ function fresh(){
     save(); });
 }
 $('#resetBtn').onclick = ()=>{ if(!confirm('모든 내용을 지우고 처음 상태로 돌릴까요?')) return;
-  state = {theme:state.theme, decor:{...THEMES[state.theme].decor}, opts:{icons:1,task:1,back:0,cursor:1}, wall:'theme', wallImg:null, wallX:50, wallY:50, wallDim:0}; fresh(); applyTheme(state.theme,false); setStatus('초기화 완료'); };
+  state = {theme:state.theme, decor:{...THEMES[state.theme].decor}, opts:{icons:1,task:1,back:0,cursor:1}, wall:'theme', wallImg:null, wallX:50, wallY:50, wallDim:0, uifont:''}; fresh(); applyTheme(state.theme,false); setStatus('초기화 완료'); };
 
 /* ---------- PNG 저장 ---------- */
 $('#saveBtn').onclick = async ()=>{
