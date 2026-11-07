@@ -147,8 +147,9 @@ input[type=range]{flex:1;min-width:80px}
 .side-deco .a1{width:520px;height:520px;left:-170px;top:150px}
 .side-deco .a2{width:380px;height:380px;left:-110px;top:230px;border-width:22px;opacity:.35}
 .side-deco .a3{width:220px;height:220px;left:170px;top:300px;border-width:2px;border-style:dashed}
-.pic{position:absolute;inset:0;cursor:pointer;
+.pic{position:absolute;inset:0;cursor:pointer;overflow:hidden;
   background-color:transparent;background-size:cover;background-position:50% 50%;background-repeat:no-repeat}
+.pic img.mainimg{position:absolute;max-width:none;max-height:none;display:block;pointer-events:none;user-select:none}
 .pic .ph{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;
   color:var(--sidetext);font-size:13px;text-align:center;line-height:1.4;opacity:.9}
 .pic .ph span{font-size:30px;line-height:1;font-weight:200}
@@ -1291,15 +1292,28 @@ function readImage(file, maxSide, cb){
   fr.readAsDataURL(file);
 }
 const pic = ()=> scene.querySelector('#pic');
-function setPicPos(){ const p = pic(); if(!p) return; p.style.backgroundPosition = `${$('#picX').value}% ${$('#picY').value}%`; }
+// 메인 사진은 <img>로 넣어서 PNG 저장 시에도 원본 화질 그대로 그림 (배경이미지 방식은 저장할 때 흐려짐)
+function layoutPic(){
+  const p = pic(); if(!p) return; const im = p.querySelector('img.mainimg'); if(!im) return;
+  const iw = +im.dataset.iw || im.naturalWidth, ih = +im.dataset.ih || im.naturalHeight; if(!iw || !ih) return;
+  const W = p.clientWidth, H = p.clientHeight;
+  const k = p.dataset.fit==='contain' ? Math.min(W/iw, H/ih) : Math.max(W/iw, H/ih);
+  const w = iw*k, h = ih*k, x = +(p.dataset.x ?? 50), y = +(p.dataset.y ?? 50);
+  im.style.width = w+'px'; im.style.height = h+'px'; im.style.left = ((W-w)*x/100)+'px'; im.style.top = ((H-h)*y/100)+'px';
+}
+function setPicImage(url, w, h){
+  const p = pic(); let im = p.querySelector('img.mainimg');
+  if(!im){ im = document.createElement('img'); im.className = 'mainimg'; im.alt = ''; im.draggable = false; p.insertBefore(im, p.firstChild); }
+  im.dataset.iw = w; im.dataset.ih = h; im.src = url; p.style.backgroundImage = ''; p.classList.add('has'); layoutPic();
+}
+function setPicPos(){ const p = pic(); if(!p) return; p.dataset.x = $('#picX').value; p.dataset.y = $('#picY').value; layoutPic(); }
 $('#picBtn').onclick = ()=> $('#picFile').click();
 $('#picFile').onchange = e=>{ const f = e.target.files[0]; if(!f) return;
-  readImage(f, 1600, url=>{ const p = pic(); p.style.backgroundImage = `url("${url}")`; p.classList.add('has');
-    p.style.backgroundSize = p.dataset.fit==='contain' ? 'contain' : 'cover'; setPicPos(); save(); setStatus('사진 적용 완료'); });
+  readImage(f, 2400, (url,w,h)=>{ setPicImage(url, w, h); setPicPos(); save(); setStatus('사진 적용 완료'); });
   e.target.value=''; };
 $('#picFit').onclick = ()=>{ const p = pic(); p.dataset.fit = p.dataset.fit==='contain' ? 'cover' : 'contain';
-  p.style.backgroundSize = p.dataset.fit; setStatus(p.dataset.fit==='cover' ? '채우기 (꽉 차게)' : '맞추기 (전체 보이게)'); save(); };
-$('#picDel').onclick = ()=>{ const p = pic(); p.style.backgroundImage=''; p.classList.remove('has'); save(); };
+  layoutPic(); setStatus(p.dataset.fit==='cover' ? '채우기 (꽉 차게)' : '맞추기 (전체 보이게)'); save(); };
+$('#picDel').onclick = ()=>{ const p = pic(); const im = p.querySelector('img.mainimg'); if(im) im.remove(); p.style.backgroundImage=''; p.classList.remove('has'); save(); };
 $('#picX').oninput = $('#picY').oninput = ()=>{ setPicPos(); }; $('#picX').onchange = $('#picY').onchange = save;
 
 $('#stkBtn').onclick = ()=> $('#stkFile').click();
@@ -1477,7 +1491,13 @@ fit();
 const had = load();
 if(!had) fresh(); setTimeout(fixSvgs, 50); if(had){ scene.querySelectorAll('img.cur').forEach(i=> i.src = ICON.cursor); const L = scene.querySelector('#divLayer'); if(L){ L.remove(); save(); } }
 applyTheme(state.theme, false);
-const p = pic(); if(p){ const m = /([\d.]+)% ([\d.]+)%/.exec(p.style.backgroundPosition||''); if(m){ $('#picX').value=m[1]; $('#picY').value=m[2]; } }
+const p = pic(); if(p){
+  const m = /([\d.]+)% ([\d.]+)%/.exec(p.style.backgroundPosition||''); if(m && p.dataset.x===undefined){ p.dataset.x = m[1]; p.dataset.y = m[2]; }
+  $('#picX').value = p.dataset.x ?? 50; $('#picY').value = p.dataset.y ?? 50;
+  const bg = /url\("?(.*?)"?\)$/.exec(p.style.backgroundImage||'');
+  if(bg){ const t = new Image(); t.onload = ()=>{ setPicImage(bg[1], t.naturalWidth, t.naturalHeight); p.style.backgroundSize=''; p.style.backgroundPosition=''; save(); }; t.src = bg[1]; }
+  else layoutPic();
+}
 if(document.fonts) document.fonts.ready.then(drawDecor);
 setStatus(had ? '이전 작업을 불러왔어요' : '준비됨 — 글자를 클릭해서 편집하세요');
 })();
