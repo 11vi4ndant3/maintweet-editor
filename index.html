@@ -163,8 +163,16 @@ input[type=range]{flex:1;min-width:80px}
   background:var(--fieldbg);border:1px solid var(--fieldbd);color:var(--fieldtext);border-radius:var(--fr)}
 .idrow .field.idf{flex:.8}
 .tbox{flex:1 1 0;min-height:0;overflow:hidden;font-size:14px;line-height:1.6;word-break:keep-all;overflow-wrap:anywhere;padding:2px}
-.divlayer{position:absolute;pointer-events:none;z-index:5}
-.divlayer .obj{pointer-events:auto}
+.hr{display:flex;align-items:center;padding:.45em 0;cursor:pointer;user-select:none;-webkit-user-select:none;--dc:var(--accent);--dw:2px;--hl:100%}
+.hr i{display:block;width:var(--hl);margin:0 auto;height:0;border-top:var(--dw) solid var(--dc)}
+.hr[data-style="dashed"] i{border-top-style:dashed}
+.hr[data-style="dotted"] i{border-top-style:dotted}
+.hr[data-style="double"] i{height:calc(var(--dw)*3);border-bottom:var(--dw) solid var(--dc)}
+.hr[data-style="fade"] i{border:0;height:var(--dw);background:linear-gradient(90deg,rgba(0,0,0,0),var(--dc) 50%,rgba(0,0,0,0))}
+.hr[data-style="glow"] i{border:0;height:var(--dw);background:var(--dc);box-shadow:0 0 6px var(--dc),0 0 12px var(--dc)}
+.hr[data-style="etched"] i{border-top:1px solid var(--footline);border-bottom:1px solid #fff;height:0}
+.hr.hsel{outline:1.5px dashed #2f7bff;outline-offset:1px}
+#stage.exporting .hr.hsel{outline:none}
 
 .ttl{display:inline-block;font-weight:800;font-size:1.4em;line-height:1.25;color:var(--titlecolor);margin:1px 0;letter-spacing:-.01em}
 .bl{position:relative;padding-left:1.15em}
@@ -366,8 +374,7 @@ input[type=range]{flex:1;min-width:80px}
         <fieldset>
           <legend>⑤ 구분선</legend>
           <div class="row">
-            <button class="b" id="addH">─ 가로선 추가</button>
-            <button class="b" id="addV">│ 세로선 추가</button>
+            <button class="b primary" id="addHr">─ 구분선 넣기 (커서 줄 아래)</button>
           </div>
           <div class="row"><label class="t">모양</label>
             <select id="divStyle">
@@ -376,12 +383,16 @@ input[type=range]{flex:1;min-width:80px}
             </select>
             <select id="divW"><option>1</option><option selected>2</option><option>3</option><option>4</option><option>6</option></select>px
           </div>
+          <div class="row"><label class="t">길이</label>
+            <select id="divLen"><option value="100">100%</option><option value="80">80%</option><option value="60">60%</option><option value="40">40%</option><option value="20">20%</option></select>
+            <span class="hint" style="margin:0">가운데 정렬</span>
+          </div>
           <div class="row"><label class="t">색</label>
             <input type="color" id="divColor" value="#1a4fd6">
             <button class="b" id="divColorApply">색 적용</button>
             <button class="b" id="divColorReset">시안 색</button>
           </div>
-          <p class="hint">구분선은 오른쪽 글 상자 안에서만 움직여요. 선을 클릭하면 선택돼요. 끝의 네모로 길이 조절, 빨간 ✕ 또는 Delete 키로 삭제 (원래 있던 선도 지울 수 있어요).</p>
+          <p class="hint">구분선은 글자처럼 한 줄을 차지해요. 글을 쓰다 커서가 있는 줄 아래에 [구분선 넣기] → 다음 줄에 이어서 쓰면 돼요. 위에 글을 추가하면 같이 밀려 내려가요.<br>선을 클릭하면 선택(점선 테두리) → 모양·두께·길이·색 변경, Delete/Backspace로 삭제. 선 바로 아래 줄 맨 앞에서 Backspace를 눌러도 지워져요.</p>
         </fieldset>
 
         <fieldset>
@@ -827,8 +838,7 @@ function defaultScene(){
           <span class="lbl single" contenteditable="true">NAME</span><span class="field single" contenteditable="true">이름을 적어 주세요</span>
           <span class="lbl single" contenteditable="true">ID</span><span class="field idf single" contenteditable="true">@my_id</span>
         </div>
-        <div class="tbox" id="box1" contenteditable="true"><span class="ttl b-none s-m">Welcome to the<br>프로필 설치 마법사</span><div><br></div><div>이 마법사는 저를 알아가는 과정을 안내합니다.</div><div>자기소개를 자유롭게 적어 주세요.</div><div><br></div><div>계속하려면 [Next]를 클릭하세요.</div><div><br></div><div><br></div><div><span class="ttl b-round s-s" id="aboutTtl">ABOUT ME</span></div><div>♡ 좋아하는 것 : </div><div>✕ 싫어하는 것 : </div><div>☆ 요즘 빠진 것 : </div><div>✉ 연락 : </div></div>
-        <div class="divlayer" id="divLayer"></div>
+        <div class="tbox" id="box1" contenteditable="true"><span class="ttl b-none s-m">Welcome to the<br>프로필 설치 마법사</span><div><br></div><div>이 마법사는 저를 알아가는 과정을 안내합니다.</div><div>자기소개를 자유롭게 적어 주세요.</div><div><br></div><div>계속하려면 [Next]를 클릭하세요.</div><div class="hr" contenteditable="false" data-style="solid"><i></i></div><div><span class="ttl b-round s-s">ABOUT ME</span></div><div>♡ 좋아하는 것 : </div><div>✕ 싫어하는 것 : </div><div>☆ 요즘 빠진 것 : </div><div>✉ 연락 : </div></div>
       </div>
     </div>
     <div class="win-foot">
@@ -1158,12 +1168,37 @@ function addDivider(orient){
   L.insertAdjacentHTML('beforeend', html);
   select(L.lastElementChild); save(); setStatus('구분선 추가 — 글 상자 안에서만 움직여요');
 }
-$('#addH').onclick = ()=> addDivider('h'); $('#addV').onclick = ()=> addDivider('v');
-const selDiv = ()=> sel && sel.dataset.type==='divider' ? sel : null;
+let selHr = null;
+function setHr(h){ if(selHr) selHr.classList.remove('hsel'); selHr = h; if(h){ h.classList.add('hsel');
+  $('#divStyle').value = h.dataset.style||'solid'; $('#divW').value = parseInt(h.style.getPropertyValue('--dw'))||2; $('#divLen').value = parseInt(h.style.getPropertyValue('--hl'))||100; } }
+const selDiv = ()=> selHr && document.body.contains(selHr) ? selHr : null;
+$('#addHr').onclick = ()=>{
+  if(!restore()){ setStatus('구분선을 넣을 줄에 먼저 커서를 두세요'); return; }
+  const root = lastBox; if(root.classList.contains('single')){ setStatus('한 줄 칸에는 구분선을 넣을 수 없어요'); return; }
+  const s = getSelection(), r = s.getRangeAt(0);
+  const el = document.createElement('div'); el.className = 'hr'; el.contentEditable = 'false'; el.dataset.style = $('#divStyle').value;
+  el.style.setProperty('--dw', $('#divW').value+'px'); if($('#divLen').value!=='100') el.style.setProperty('--hl', $('#divLen').value+'%');
+  el.innerHTML = '<i></i>';
+  let tb = topBlock(r.startContainer, root);
+  if(!tb){ root.appendChild(el); }
+  else { tb = wrapInline(tb, root);
+    if(tb.nodeType===1 && !tb.classList.contains('hr') && !tb.textContent.trim()) root.replaceChild(el, tb); else tb.after(el); }
+  let next = el.nextSibling;
+  if(!next || (next.nodeType===1 && next.classList.contains('hr'))){ const d = document.createElement('div'); d.innerHTML = '<br>'; el.after(d); next = d; }
+  const nr = document.createRange(); nr.setStart(next, 0); nr.collapse(true); s.removeAllRanges(); s.addRange(nr);
+  setHr(el); setStatus('구분선 넣음 — 아래 줄에 이어서 쓰세요'); save();
+};
 $('#divStyle').onchange = e=>{ const d = selDiv(); if(d){ d.dataset.style = e.target.value; save(); } };
 $('#divW').onchange = e=>{ const d = selDiv(); if(d){ d.style.setProperty('--dw', e.target.value+'px'); save(); } };
+$('#divLen').onchange = e=>{ const d = selDiv(); if(d){ d.style.setProperty('--hl', e.target.value+'%'); save(); } };
 $('#divColorApply').onclick = ()=>{ const d = selDiv(); if(!d) return setStatus('구분선을 먼저 클릭해서 선택하세요'); d.style.setProperty('--dc', $('#divColor').value); save(); };
 $('#divColorReset').onclick = ()=>{ const d = selDiv(); if(!d) return setStatus('구분선을 먼저 클릭해서 선택하세요'); d.style.removeProperty('--dc'); save(); };
+stage.addEventListener('pointerdown', e=>{ const h = e.target.closest('.hr'); setHr(h); }, true);
+document.addEventListener('keydown', e=>{
+  const ae = document.activeElement; if(ae && /INPUT|SELECT|TEXTAREA/.test(ae.tagName)) return;
+  if(selHr && document.body.contains(selHr) && (e.key==='Delete' || e.key==='Backspace')){ e.preventDefault(); const n = selHr; setHr(null); n.remove(); save(); setStatus('구분선 삭제'); }
+  else if(selHr && e.key!=='Shift') setHr(null);
+}, true);
 
 /* 팝업·순서·복제·삭제 */
 $('#popAdd').onclick = ()=>{ scene.insertAdjacentHTML('beforeend', popupHTML($('#popKind').value, 470, 300, 230, topZ()+1)); select(scene.lastElementChild); save(); };
@@ -1176,17 +1211,14 @@ $('#del').onclick = ()=>{ if(!sel) return setStatus('개체를 먼저 선택하�
 /* ---------- 저장(로컬) ---------- */
 let saveT = null;
 function save(){ clearTimeout(saveT); saveT = setTimeout(()=>{
-  try{ const cl = scene.cloneNode(true); cl.querySelectorAll('.sel').forEach(e=>e.classList.remove('sel'));
+  try{ const cl = scene.cloneNode(true); cl.querySelectorAll('.sel,.hsel').forEach(e=>e.classList.remove('sel','hsel'));
     localStorage.setItem(KEY, JSON.stringify({v:1, state, html:cl.innerHTML})); }
   catch(err){ setStatus('⚠ 자동 저장 용량 초과 — 새로고침하면 사진이 사라질 수 있어요'); }
 }, 500); }
 function load(){ try{ const d = JSON.parse(localStorage.getItem(KEY)||'null'); if(d && d.html && d.state){ state = {...state, ...d.state, opts:{...state.opts, ...d.state.opts}}; if(!THEMES[state.theme]){ state.theme='luna'; state.decor={...THEMES.luna.decor}; } scene.innerHTML = d.html; return true; } }catch(e){} return false; }
 function fresh(){
   scene.innerHTML = defaultScene();
-  requestAnimationFrame(()=>{ const L = syncLayer(); const at = scene.querySelector('#aboutTtl');
-    const y = at ? Math.round(stagePt(at).y - stagePt(L).y - 26) : Math.round(L.clientHeight/2);
-    L.insertAdjacentHTML('beforeend', dividerHTML(0, y, L.clientWidth, 'h', 'solid', 2));
-    if(at) at.removeAttribute('id'); save(); });
+  save();
 }
 $('#resetBtn').onclick = ()=>{ if(!confirm('모든 내용을 지우고 처음 상태로 돌릴까요?')) return;
   state = {theme:state.theme, decor:{...THEMES[state.theme].decor}, opts:{icons:1,task:1,back:0,cursor:1}, wall:'theme', wallImg:null, wallX:50, wallY:50, wallDim:0, uifont:''}; fresh(); applyTheme(state.theme,false); setStatus('초기화 완료'); };
@@ -1215,7 +1247,7 @@ $('#modal').onclick = e=>{ if(e.target.id==='modal') $('#modal').classList.remov
 /* ---------- 시작 ---------- */
 fit();
 const had = load();
-if(!had) fresh(); else syncLayer();
+if(!had) fresh(); else { const L = scene.querySelector('#divLayer'); if(L){ L.remove(); save(); } }
 applyTheme(state.theme, false);
 const p = pic(); if(p){ const m = /([\d.]+)% ([\d.]+)%/.exec(p.style.backgroundPosition||''); if(m){ $('#picX').value=m[1]; $('#picY').value=m[2]; } }
 if(document.fonts) document.fonts.ready.then(drawDecor);
