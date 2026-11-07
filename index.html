@@ -198,8 +198,8 @@ input[type=range]{flex:1;min-width:80px}
 .xbtn{position:relative;display:inline-flex;align-items:center;justify-content:center;min-width:88px;height:27px;padding:0 12px;
   font:13px var(--uifont,'Tahoma','Pretendard',sans-serif);color:var(--btntext);
   border:1px solid var(--btnbd);border-radius:var(--br);background:var(--btnbg);box-shadow:var(--btnshadow);user-select:none}
-/* Next/OK = 눌린 버튼 (안으로 움푹) */
-.xbtn.next{background:linear-gradient(180deg,rgba(0,0,0,.22) 0px,rgba(0,0,0,.08) 3px,rgba(0,0,0,0) 7px),var(--btnpress);padding-top:2px;padding-left:14px;padding-right:10px}
+/* Next = 눌린 버튼 (안으로 움푹), 팝업 OK는 일반 버튼 */
+.win-foot .xbtn.next{background:linear-gradient(180deg,rgba(0,0,0,.22) 0px,rgba(0,0,0,.08) 3px,rgba(0,0,0,0) 7px),var(--btnpress);padding-top:2px;padding-left:14px;padding-right:10px}
 .xbtn .cur{position:absolute;left:52%;top:13px;width:17px;height:24px;pointer-events:none}
 .btns .back{margin-right:-2px}
 #stage.hide-back .xbtn.back{display:none}
