@@ -182,7 +182,7 @@ input[type=range]{flex:1;min-width:80px}
 .ttl.s-xs{font-size:1.05em}
 .ttl.s-s{font-size:1.2em}
 .ttl.s-l{font-size:1.8em}
-/* Neo둥근모 Pro는 굵은체 파일이 없어서, 번지는 가짜 굵기 대신 1px 겹쳐 찍는 도트식 굵기 사용 */
+/* Neo둥근모 Pro·갈무리14는 굵은체 파일이 없어서, 번지는 가짜 굵기 대신 1px 겹쳐 찍는 도트식 굵기 사용 */
 #stage .pxb{font-weight:400!important;font-synthesis:none;text-shadow:1px 0 0 currentColor}
 .bx{display:inline-block;line-height:1.35;margin:1px 0}
 .ttl.b-square,.ttl.b-round,.ttl.b-fsquare,.ttl.b-fround,.bx.b-square,.bx.b-round,.bx.b-fsquare,.bx.b-fround{margin:.15em .25em .4em 0}
@@ -1452,10 +1452,11 @@ $('#dup').onclick = ()=>{ if(!sel) return setStatus('개체를 먼저 선택하�
 $('#del').onclick = ()=>{ if(!sel) return setStatus('개체를 먼저 선택하세요'); sel.remove(); sel=null; save(); };
 
 /* ---------- 저장(로컬) ---------- */
+const PIXEL_NOBOLD = ['NeoDunggeunmo Pro','Galmuri14'];
 const BOLD_SEL = 'b,strong,.ttl,[style*="font-weight: bold"],[style*="font-weight: 700"],[style*="font-weight:bold"],.lbl,.tb-title,.pt,.startbtn span,.idrow .lbl';
 function markPixelBold(){
   scene.querySelectorAll(BOLD_SEL).forEach(el=>{ const f = (getComputedStyle(el).fontFamily.split(',')[0]||'').replace(/["']/g,'').trim();
-    el.classList.toggle('pxb', f==='NeoDunggeunmo Pro'); });
+    el.classList.toggle('pxb', PIXEL_NOBOLD.includes(f)); });
 }
 let saveT = null;
 function save(){ clearTimeout(saveT); saveT = setTimeout(()=>{ markPixelBold();
