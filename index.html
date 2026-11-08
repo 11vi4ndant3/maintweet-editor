@@ -213,7 +213,7 @@ input[type=range]{flex:1;min-width:80px}
 .startbtn span{position:relative;top:-2px;line-height:1;color:var(--starttext);font:normal 700 19px var(--uifont,'Trebuchet MS','Pretendard',sans-serif);text-shadow:1px 1px 1px rgba(0,0,0,.5);padding-right:2px}
 .ql{display:flex;align-items:center;gap:7px;margin-left:10px;padding:0 9px 0 6px;height:36px;border-right:1px solid rgba(0,0,0,.25);box-sizing:border-box}
 .ql img{width:16px;height:16px;display:block}
-.taskitem{margin-left:8px;height:28px;width:200px;display:flex;align-items:center;gap:6px;padding:0 8px;border-radius:3px;
+.taskitem{margin-left:12px;height:28px;width:200px;display:flex;align-items:center;gap:6px;padding:0 8px;border-radius:3px;
   background:linear-gradient(180deg,rgba(255,255,255,.28) 0px,rgba(255,255,255,.10) 2px,rgba(255,255,255,0) 5px),var(--taskitem);
   border:1px solid;border-color:rgba(255,255,255,.30) rgba(0,0,0,.30) rgba(0,0,0,.40) rgba(255,255,255,.22);overflow:hidden}
 .taskitem img{width:16px;height:16px;flex:none}
@@ -1076,7 +1076,6 @@ function defaultScene(){
   </div>
   <div class="taskbar">
     <div class="startbtn"><img src="${ICON.start}" alt=""><span>start</span></div>
-    <div class="ql"><img class="q1" src="${ICON.folder}" alt=""><img class="q2" src="${ICON.web}" alt=""><img class="q3" src="${ICON.pc}" alt=""></div>
     <div class="taskitem"><img src="${ICON.disc}" alt=""><span contenteditable="true" class="single">Profile - Setup wizard</span></div>
     <div class="tray"><i style="background:#ffd34a"></i><i style="background:#5fd65f"></i><i style="background:#fff"></i><span contenteditable="true" class="single">${nowClock()}</span></div>
   </div>`;
@@ -1534,7 +1533,7 @@ $('#modal').onclick = e=>{ if(e.target.id==='modal') $('#modal').classList.remov
 /* ---------- 시작 ---------- */
 fit();
 const had = load();
-if(!had) fresh(); setTimeout(fixSvgs, 50); if(had){ const sb = scene.querySelector('.startbtn'); if(sb && !scene.querySelector('.ql')) sb.insertAdjacentHTML('afterend','<div class="ql"><img class="q1" alt=""><img class="q2" alt=""><img class="q3" alt=""></div>'); scene.querySelectorAll('img.cur').forEach(i=> i.src = ICON.cursor); const L = scene.querySelector('#divLayer'); if(L){ L.remove(); save(); } }
+if(!had) fresh(); setTimeout(fixSvgs, 50); if(had){ scene.querySelectorAll('.ql').forEach(q=> q.remove()); scene.querySelectorAll('img.cur').forEach(i=> i.src = ICON.cursor); const L = scene.querySelector('#divLayer'); if(L){ L.remove(); save(); } }
 applyTheme(state.theme, false);
 const p = pic(); if(p){
   const m = /([\d.]+)% ([\d.]+)%/.exec(p.style.backgroundPosition||''); if(m && p.dataset.x===undefined){ p.dataset.x = m[1]; p.dataset.y = m[2]; }
