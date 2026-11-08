@@ -116,7 +116,7 @@ input[type=range]{flex:1;min-width:80px}
 .desk-icons{position:absolute;left:14px;top:14px;z-index:15;display:flex;flex-direction:column;gap:14px;width:86px}
 .dicon{display:flex;flex-direction:column;align-items:center;gap:3px;text-align:center}
 .dicon img{width:40px;height:40px;display:block}
-#stage.pix-icons .tb-ico,#stage.pix-icons .taskitem img,#stage.pix-icons .pi,#stage.pix-icons .pop-row img,#stage.pix-icons .startbtn img{image-rendering:pixelated}
+#stage.pix-icons .tb-ico,#stage.pix-icons .taskitem img,#stage.pix-icons .pi,#stage.pix-icons .pop-row img,#stage.pix-icons .startbtn img,#stage.pix-icons .ql img{image-rendering:pixelated}
 #stage.pix-icons .dicon img{width:32px;height:32px;margin:4px 0;image-rendering:pixelated}
 .dicon span{color:#fff;font:12px var(--uifont,'Tahoma','Pretendard',sans-serif);line-height:1.2;text-shadow:1px 1px 1px #000,0 0 2px #000;padding:1px 3px;min-width:20px}
 #stage.hide-icons .desk-icons{display:none}
@@ -211,9 +211,11 @@ input[type=range]{flex:1;min-width:80px}
   background:var(--start);border-right:1px solid rgba(0,0,0,.35)}
 .startbtn img{width:20px;height:20px}
 .startbtn span{position:relative;top:-2px;line-height:1;color:var(--starttext);font:normal 700 19px var(--uifont,'Trebuchet MS','Pretendard',sans-serif);text-shadow:1px 1px 1px rgba(0,0,0,.5);padding-right:2px}
-.taskitem{margin-left:12px;height:27px;width:200px;display:flex;align-items:center;gap:6px;padding:0 8px;border-radius:3px;
-  background:linear-gradient(180deg,rgba(0,0,0,.30) 0px,rgba(0,0,0,.12) 3px,rgba(0,0,0,0) 6px),var(--taskitem);
-  border:1px solid;border-color:rgba(0,0,0,.35) rgba(255,255,255,.12) rgba(255,255,255,.18) rgba(0,0,0,.30);overflow:hidden}
+.ql{display:flex;align-items:center;gap:7px;margin-left:10px;padding:0 9px 0 6px;height:36px;border-right:1px solid rgba(0,0,0,.25);box-sizing:border-box}
+.ql img{width:16px;height:16px;display:block}
+.taskitem{margin-left:8px;height:28px;width:200px;display:flex;align-items:center;gap:6px;padding:0 8px;border-radius:3px;
+  background:linear-gradient(180deg,rgba(255,255,255,.28) 0px,rgba(255,255,255,.10) 2px,rgba(255,255,255,0) 5px),var(--taskitem);
+  border:1px solid;border-color:rgba(255,255,255,.30) rgba(0,0,0,.30) rgba(0,0,0,.40) rgba(255,255,255,.22);overflow:hidden}
 .taskitem img{width:16px;height:16px;flex:none}
 .taskitem span{color:var(--tasktext);font:12px var(--uifont,'Tahoma','Pretendard',sans-serif);white-space:nowrap;overflow:hidden}
 .tray{margin-left:auto;height:36px;display:flex;align-items:center;gap:7px;padding:0 12px 0 12px;background:var(--tray);
@@ -689,6 +691,7 @@ ICON.disc = pixIcon('disc','pixel',2);
 ICON.warn = pixIcon('warn','pixel'); ICON.mail = pixIcon('mail','pixel'); ICON.info = pixIcon('info','pixel'); ICON.start = pixIcon('start','pixel');
 const ICON_SLOTS = [
   ['.desk-icons .dicon:nth-child(1) img','folder'], ['.desk-icons .dicon:nth-child(2) img','pc'], ['.desk-icons .dicon:nth-child(3) img','web'],
+  ['.ql .q1','folder'], ['.ql .q2','web'], ['.ql .q3','pc'],
   ['.tb-ico, .taskitem img, .popup[data-kind="progress"] .pi','disc'], ['.startbtn img','start'],
   ['.popup[data-kind="alert"] .pi','info'], ['.popup[data-kind="alert"] .pop-row img','warn'],
   ['.popup[data-kind="msg"] .pi, .popup[data-kind="msg"] .pop-row img','mail']];
@@ -719,7 +722,7 @@ const BASE = {
   popbody:'#ece9d8', poptext:'#111111',
   task:'linear-gradient(180deg,#3168d5 0%,#4993e6 5%,#2157d7 14%,#2663e0 84%,#1941a5 100%)',
   start:'linear-gradient(180deg,#3c9a3c 0%,#6cc663 10%,#3fae3f 45%,#2f8f2f 90%,#2a7a2a 100%)',
-  taskitem:'linear-gradient(180deg,#1e52b7,#2f6ee4)',
+  taskitem:'linear-gradient(180deg,#4a9bff 0%,#3283f6 12%,#2a72ea 55%,#2364dc 90%,#1d55c4 100%)',
   tray:'linear-gradient(180deg,#0c59b9 0%,#139ee9 6%,#18b9f5 10%,#139beb 20%,#1290e8 70%,#0d8dea 95%,#095bc9 100%)',
   starttext:'#ffffff', tasktext:'#ffffff', traytext:'#ffffff'
 };
@@ -756,7 +759,7 @@ const THEMES = {
       btnbg:'linear-gradient(180deg,#22348a,#0c1440)', btnbd:'#4ff0ff', btntext:'#dff6ff', btnfocus:'#2f59c9', btnpress:'linear-gradient(180deg,#060b2a 0%,#0c1440 50%,#16246a 100%)',
       glow:'0 0 0 1px rgba(79,240,255,.5), 0 0 30px rgba(79,240,255,.45), 0 12px 30px rgba(0,0,0,.6)',
       popbody:'#0d1438', poptext:'#dff6ff',
-      task:'linear-gradient(180deg,#1b2768 0%,#2a3a96 6%,#0f1850 16%,#0b1240 100%)', taskitem:'linear-gradient(180deg,#14206a,#22349a)',
+      task:'linear-gradient(180deg,#1b2768 0%,#2a3a96 6%,#0f1850 16%,#0b1240 100%)', taskitem:'linear-gradient(180deg,#34489e 0%,#25368a 15%,#1b2a72 60%,#142060 100%)',
       tray:'linear-gradient(180deg,#0e1a5a,#1b2e8a 50%,#0a1240)'},
     wall:{sky:['#01040f','#0a1d58','#2a4b9c'], cloud:.22, far:'#1a2a5a', hill:['#2d7a50','#14432a','#04170c'], glow:'#bfe6ff', stars:1, moon:1},
     decor:{color:'#4ff0ff', grid:1, floor:1, rings:1, hex:1, brackets:1, sparkle:1, nodes:0, scan:1}},
@@ -1073,6 +1076,7 @@ function defaultScene(){
   </div>
   <div class="taskbar">
     <div class="startbtn"><img src="${ICON.start}" alt=""><span>start</span></div>
+    <div class="ql"><img class="q1" src="${ICON.folder}" alt=""><img class="q2" src="${ICON.web}" alt=""><img class="q3" src="${ICON.pc}" alt=""></div>
     <div class="taskitem"><img src="${ICON.disc}" alt=""><span contenteditable="true" class="single">Profile - Setup wizard</span></div>
     <div class="tray"><i style="background:#ffd34a"></i><i style="background:#5fd65f"></i><i style="background:#fff"></i><span contenteditable="true" class="single">${nowClock()}</span></div>
   </div>`;
@@ -1530,7 +1534,7 @@ $('#modal').onclick = e=>{ if(e.target.id==='modal') $('#modal').classList.remov
 /* ---------- 시작 ---------- */
 fit();
 const had = load();
-if(!had) fresh(); setTimeout(fixSvgs, 50); if(had){ scene.querySelectorAll('img.cur').forEach(i=> i.src = ICON.cursor); const L = scene.querySelector('#divLayer'); if(L){ L.remove(); save(); } }
+if(!had) fresh(); setTimeout(fixSvgs, 50); if(had){ const sb = scene.querySelector('.startbtn'); if(sb && !scene.querySelector('.ql')) sb.insertAdjacentHTML('afterend','<div class="ql"><img class="q1" alt=""><img class="q2" alt=""><img class="q3" alt=""></div>'); scene.querySelectorAll('img.cur').forEach(i=> i.src = ICON.cursor); const L = scene.querySelector('#divLayer'); if(L){ L.remove(); save(); } }
 applyTheme(state.theme, false);
 const p = pic(); if(p){
   const m = /([\d.]+)% ([\d.]+)%/.exec(p.style.backgroundPosition||''); if(m && p.dataset.x===undefined){ p.dataset.x = m[1]; p.dataset.y = m[2]; }
