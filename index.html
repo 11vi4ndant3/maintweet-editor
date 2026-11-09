@@ -182,6 +182,9 @@ input[type=range]{flex:1;min-width:80px}
 .bl{position:relative;padding-left:1.15em}
 .bl::before{content:"";position:absolute;left:.3em;top:.62em;width:.38em;height:.38em;border-radius:50%;background:var(--accent)}
 .ttl.s-xs{font-size:1.05em}
+/* 편집 중일 때만 타이틀에 점선 표시 (저장 이미지에는 안 나옴) */
+[contenteditable="true"]:focus .ttl{outline:1px dashed rgba(47,123,255,.6);outline-offset:3px}
+#stage.exporting .ttl{outline:none!important}
 .ttl.s-s{font-size:1.2em}
 .ttl.s-l{font-size:1.8em}
 /* Neo둥근모 Pro·갈무리14는 굵은체 파일이 없어서, 번지는 가짜 굵기 대신 1px 겹쳐 찍는 도트식 굵기 사용 */
@@ -356,7 +359,7 @@ input[type=range]{flex:1;min-width:80px}
           </div>
           <hr style="border:0;border-top:1px solid #d0d0bf;margin:8px 0">
           <div class="row">
-            <button class="b primary" id="ttlBtn">★ 타이틀 적용/해제</button>
+            <button class="b primary" id="ttlBtn">★ 타이틀 적용</button>
           </div>
           <div class="row"><label class="t">글자 박스</label>
             <button class="b tbox-btn on" data-box="b-none">없음</button>
@@ -1281,19 +1284,46 @@ function syncTitleButtons(){
   const size = t ? (['s-xs','s-s','s-m','s-l'].find(c=>t.classList.contains(c))||'s-m') : titleSize;
   document.querySelectorAll('.tbox-btn').forEach(b=>b.classList.toggle('on', b.dataset.box===box));
   document.querySelectorAll('.tsize-btn').forEach(b=>b.classList.toggle('on', b.dataset.size===size));
+  const tb = $('#ttlBtn'); tb.classList.toggle('on', !!t); tb.textContent = t ? '★ 타이틀 적용됨 (누르면 해제)' : '★ 타이틀 적용';
 }
+// 타이틀/박스 뒤에 보이지 않는 글자(ZWSP)를 둬서, 그 뒤에 일반 글을 이어 쓸 수 있게 함
+const ZW = '\u200B';
+function ensureTail(sp){ const n = sp.nextSibling; if(!(n && n.nodeType===3 && n.data.startsWith(ZW))) sp.after(document.createTextNode(ZW)); return sp.nextSibling; }
+function ensureTails(){ scene.querySelectorAll('[contenteditable="true"] .ttl, [contenteditable="true"] .bx').forEach(ensureTail); }
+function caretAtEndOf(sp, s){ if(!s.rangeCount || !s.isCollapsed) return false; const r = s.getRangeAt(0); if(!sp.contains(r.startContainer)) return false;
+  const rest = document.createRange(); rest.setStart(r.startContainer, r.startOffset); rest.setEnd(sp, sp.childNodes.length); return !rest.toString().replace(/\u200B/g,'').length; }
+function caretAfter(sp){ const t = ensureTail(sp); const s = getSelection(), nr = document.createRange(); nr.setStart(t, 1); nr.collapse(true); s.removeAllRanges(); s.addRange(nr); }
+stage.addEventListener('keydown', e=>{
+  if(e.isComposing || e.ctrlKey || e.metaKey || e.altKey) return;
+  const s = getSelection(); if(!s.rangeCount || !s.isCollapsed) return;
+  const sp = bxAt(s.anchorNode); if(!sp || !caretAtEndOf(sp, s)) return;
+  const typing = e.key.length===1 || e.key==='Process' || e.key==='Enter' || e.key==='ArrowRight';
+  if(typing){ caretAfter(sp); if(e.key==='ArrowRight') e.preventDefault(); }
+}, true);
+// 크롬이 지운 서식을 흉내 내며 끼워 넣는 찌꺼기 태그 정리
+function unwrapEl(el){ const p = el.parentNode; while(el.firstChild) p.insertBefore(el.firstChild, el); p.removeChild(el); }
+stage.addEventListener('input', ()=>{
+  const ed = document.activeElement; if(!ed || !ed.isContentEditable) return;
+  // 전부 지워서 비었으면 깨끗한 빈 줄로 초기화 (지운 타이틀 서식이 따라오지 않게)
+  if(!ed.classList.contains('single') && !ed.textContent.replace(/\u200B/g,'').trim() && !ed.querySelector('img,.hr')){
+    ed.innerHTML = '<div><br></div>'; const r = document.createRange(); r.setStart(ed.firstChild, 0); r.collapse(true); const s = getSelection(); s.removeAllRanges(); s.addRange(r); return; }
+  const cs = getComputedStyle(stage), cols = ['--text','--titlecolor','--sub'].map(v=> rgbOf(cs.getPropertyValue(v).trim()));
+  ed.querySelectorAll('span[style*="letter-spacing"]').forEach(unwrapEl);
+  ed.querySelectorAll('font').forEach(f=>{ if(!f.getAttribute('color') || cols.includes(rgbOf(f.getAttribute('color')))){ unwrapEl(f); } });
+});
 $('#ttlBtn').onclick = ()=>{
   if(!restore()){ setStatus('타이틀로 만들 글자를 드래그해서 선택하세요'); return; }
   const s = getSelection(), r = s.getRangeAt(0); const t = ttlAt(r.startContainer) || ttlAt(r.endContainer);
   if(t){ if(BOXES.slice(1).some(c=>t.classList.contains(c))){ t.classList.remove('ttl','s-xs','s-s','s-m','s-l'); t.classList.add('bx'); setStatus('타이틀 해제 (박스는 유지)'); }
-    else { unwrap(t); setStatus('타이틀 해제'); } save(); return; }
+    else { unwrap(t); setStatus('타이틀 해제'); } save(); setTimeout(syncTitleButtons, 0); return; }
   const bx0 = bxAt(r.startContainer) || bxAt(r.endContainer);
   if(bx0){ bx0.classList.remove('bx'); bx0.classList.add('ttl', titleSize); setStatus('타이틀 적용'); save(); syncTitleButtons(); return; }
   if(r.collapsed){ setStatus('타이틀로 만들 글자를 드래그해서 선택하세요'); return; }
   const span = document.createElement('span'); span.className = `ttl ${titleBox} ${titleSize}`;
   span.appendChild(r.extractContents()); span.querySelectorAll('.ttl').forEach(unwrap);
-  r.insertNode(span); const nr = document.createRange(); nr.selectNodeContents(span); s.removeAllRanges(); s.addRange(nr);
-  setStatus('타이틀 적용'); save();
+  r.insertNode(span); ensureTail(span); const nr = document.createRange(); nr.selectNodeContents(span); s.removeAllRanges(); s.addRange(nr);
+  savedRange = nr.cloneRange(); lastBox = edOf(span);
+  setStatus('타이틀 적용 — 타이틀 끝에서 이어 쓰면 일반 글로 써져요'); save(); syncTitleButtons();
 };
 document.querySelectorAll('.tbox-btn').forEach(b=> b.onclick = ()=>{
   titleBox = b.dataset.box;
@@ -1307,7 +1337,7 @@ document.querySelectorAll('.tbox-btn').forEach(b=> b.onclick = ()=>{
     if(titleBox!=='b-none'){
       const span = document.createElement('span'); span.className = `bx ${titleBox}`;
       span.appendChild(r.extractContents()); span.querySelectorAll('.bx').forEach(unwrap);
-      r.insertNode(span); const nr = document.createRange(); nr.selectNodeContents(span); s.removeAllRanges(); s.addRange(nr);
+      r.insertNode(span); ensureTail(span); const nr = document.createRange(); nr.selectNodeContents(span); s.removeAllRanges(); s.addRange(nr);
       setStatus('글자 박스 적용'); save();
     }
   } else setStatus('박스를 씌울 글자를 드래그해서 선택하세요');
@@ -1551,15 +1581,27 @@ function markPixelBold(){
   scene.querySelectorAll(BOLD_SEL).forEach(el=>{ const f = (getComputedStyle(el).fontFamily.split(',')[0]||'').replace(/["']/g,'').trim();
     el.classList.toggle('pxb', PIXEL_NOBOLD.includes(f)); });
 }
+// 자동 저장: 용량이 큰 브라우저 저장소(IndexedDB) 사용, 안 되면 localStorage
+const idb = (()=>{ let dbp = null;
+  const open = ()=> dbp || (dbp = new Promise((res,rej)=>{ if(!window.indexedDB) return rej(new Error('no idb'));
+    const r = indexedDB.open('xp_profile_wizard', 1); r.onupgradeneeded = ()=> r.result.createObjectStore('kv'); r.onsuccess = ()=> res(r.result); r.onerror = ()=> rej(r.error); }));
+  return {
+    get: k => open().then(db=> new Promise((res,rej)=>{ const q = db.transaction('kv').objectStore('kv').get(k); q.onsuccess = ()=> res(q.result); q.onerror = ()=> rej(q.error); })),
+    set: (k,v) => open().then(db=> new Promise((res,rej)=>{ const tx = db.transaction('kv','readwrite'); tx.objectStore('kv').put(v,k); tx.oncomplete = ()=> res(); tx.onerror = ()=> rej(tx.error); tx.onabort = ()=> rej(tx.error); }))
+  }; })();
 let saveT = null;
 function save(){ clearTimeout(saveT); saveT = setTimeout(()=>{ markPixelBold();
-  try{ const cl = scene.cloneNode(true); cl.querySelectorAll('.sel,.hsel').forEach(e=>e.classList.remove('sel','hsel'));
-    localStorage.setItem(KEY, JSON.stringify({v:1, state, html:cl.innerHTML})); }
-  catch(err){ setStatus('⚠ 자동 저장 용량 초과 — 새로고침하면 사진이 사라질 수 있어요'); }
+  const cl = scene.cloneNode(true); cl.querySelectorAll('.sel,.hsel').forEach(e=>e.classList.remove('sel','hsel'));
+  const data = JSON.stringify({v:1, state, html:cl.innerHTML});
+  idb.set(KEY, data).then(()=>{ try{ localStorage.removeItem(KEY); }catch(e){} })
+    .catch(()=>{ try{ localStorage.setItem(KEY, data); }catch(err){ setStatus('⚠ 자동 저장 공간이 부족해요 — 새로고침하면 사진이 사라질 수 있어요'); } });
 }, 500); }
-function load(){ try{ const d = JSON.parse(localStorage.getItem(KEY)||'null'); if(d && d.html && d.state){ state = {...state, ...d.state, opts:{...state.opts, ...d.state.opts}}; if(!THEMES[state.theme]){ state.theme='luna'; state.decor={...THEMES.luna.decor}; } scene.innerHTML = d.html; return true; } }catch(e){} return false; }
+async function load(){ let raw = null;
+  try{ raw = await idb.get(KEY); }catch(e){}
+  if(!raw){ try{ raw = localStorage.getItem(KEY); }catch(e){} }
+  try{ const d = JSON.parse(raw||'null'); if(d && d.html && d.state){ state = {...state, ...d.state, opts:{...state.opts, ...d.state.opts}}; if(!THEMES[state.theme]){ state.theme='luna'; state.decor={...THEMES.luna.decor}; } scene.innerHTML = d.html; return true; } }catch(e){} return false; }
 function fresh(){
-  scene.innerHTML = defaultScene();
+  scene.innerHTML = defaultScene(); ensureTails();
   save(); fixSvgs();
 }
 $('#resetBtn').onclick = ()=>{ if(!confirm('모든 내용을 지우고 처음 상태로 돌릴까요?')) return;
@@ -1588,8 +1630,10 @@ $('#closeModal').onclick = ()=> $('#modal').classList.remove('show');
 $('#modal').onclick = e=>{ if(e.target.id==='modal') $('#modal').classList.remove('show'); };
 
 /* ---------- 시작 ---------- */
+(async ()=>{
 fit();
-const had = load();
+const had = await load();
+ensureTails();
 if(!had) fresh(); setTimeout(fixSvgs, 50); if(had){ scene.querySelectorAll('.ql').forEach(q=> q.remove()); scene.querySelectorAll('img.cur').forEach(i=> i.src = ICON.cursor); const L = scene.querySelector('#divLayer'); if(L){ L.remove(); save(); } }
 applyTheme(state.theme, false);
 const p = pic(); if(p){
@@ -1601,6 +1645,7 @@ const p = pic(); if(p){
 }
 if(document.fonts) document.fonts.ready.then(()=>{ drawDecor(); markPixelBold(); });
 setStatus(had ? '이전 작업을 불러왔어요' : '준비됨 — 글자를 클릭해서 편집하세요');
+})();
 })();
 </script>
 </body>
