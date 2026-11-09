@@ -146,8 +146,10 @@ input[type=range]{flex:1;min-width:80px}
 .side-deco .a1{width:520px;height:520px;left:-170px;top:150px}
 .side-deco .a2{width:380px;height:380px;left:-110px;top:230px;border-width:22px;opacity:.35}
 .side-deco .a3{width:220px;height:220px;left:170px;top:300px;border-width:2px;border-style:dashed}
-.pic{position:absolute;inset:0;cursor:pointer;overflow:hidden;
+.pic{position:absolute;inset:0;cursor:pointer;touch-action:none;overflow:hidden;
   background-color:transparent;background-size:cover;background-position:50% 50%;background-repeat:no-repeat}
+.pic.has{cursor:grab}
+#stage.wall-pan{touch-action:none}
 .pic img.mainimg{position:absolute;max-width:none;max-height:none;display:block;pointer-events:none;user-select:none}
 .pic .ph{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;
   color:var(--sidetext);font-size:13px;text-align:center;line-height:1.4;opacity:.9}
@@ -314,8 +316,9 @@ input[type=range]{flex:1;min-width:80px}
           </div>
           <div class="row"><label class="t">가로 위치</label><input type="range" id="wallX" min="0" max="100" value="50"></div>
           <div class="row"><label class="t">세로 위치</label><input type="range" id="wallY" min="0" max="100" value="50"></div>
+          <div class="row"><label class="t">확대</label><input type="range" id="wallZ" min="100" max="500" value="100"></div>
           <div class="row"><label class="t">어둡게</label><input type="range" id="wallDim" min="0" max="70" value="0"></div>
-          <p class="hint">위치 슬라이더는 내 사진일 때만 움직여요. 가로로 긴 사진(3:2 정도)이 잘 맞아요.</p>
+          <p class="hint">내 사진일 때는 창 바깥 배경을 <b>드래그해서 위치 이동</b>, 휴대폰은 <b>두 손가락으로 확대·축소</b>도 돼요. 위치·확대 슬라이더는 내 사진일 때만 움직여요. 가로로 긴 사진(3:2 정도)이 잘 맞아요.</p>
         </fieldset>
 
         <fieldset>
@@ -382,6 +385,8 @@ input[type=range]{flex:1;min-width:80px}
           </div>
           <div class="row"><label class="t">가로 위치</label><input type="range" id="picX" min="0" max="100" value="50"></div>
           <div class="row"><label class="t">세로 위치</label><input type="range" id="picY" min="0" max="100" value="50"></div>
+          <div class="row"><label class="t">확대</label><input type="range" id="picZ" min="100" max="500" value="100"></div>
+          <p class="hint">사진을 <b>드래그해서 위치 이동</b>, <b>마우스 휠</b>이나 <b>두 손가락</b>으로 확대·축소. 사진이 있을 때는 [사진 넣기] 버튼으로 바꿔요.</p>
         </fieldset>
 
         <fieldset>
@@ -875,7 +880,7 @@ THEMES.luna.name='01 LUNA BLUE'; THEMES.night.name='02 MIDNIGHT.EXE'; THEMES.cyb
 const DECO_LABEL = {grid:'그리드', floor:'바닥 그리드', rings:'HUD 링', hex:'데이터 코드', brackets:'코너 브래킷·라벨', sparkle:'반짝이', nodes:'네트워크 노드', scan:'스캔라인'};
 const OPT_LABEL = {icons:'바탕화면 아이콘', task:'작업 표시줄', back:'< Back 버튼', cursor:'마우스 커서'};
 
-let state = {theme:'luna', decor:{...THEMES.luna.decor}, opts:{icons:1, task:1, back:0, cursor:1}, wall:'theme', wallImg:null, wallX:50, wallY:50, wallDim:0, uifont:'', iconStyle:'pixel'};
+let state = {theme:'luna', decor:{...THEMES.luna.decor}, opts:{icons:1, task:1, back:0, cursor:1}, wall:'theme', wallImg:null, wallX:50, wallY:50, wallZoom:1, wallDim:0, uifont:'', iconStyle:'pixel'};
 let titleBox = 'b-none', titleSize = 's-m';
 
 /* ---------- 유틸 ---------- */
@@ -890,10 +895,11 @@ function wallDim(ctx){ if(state.wallDim>0){ ctx.fillStyle = `rgba(0,0,0,${state.
 function drawWall(){
   const cv = $('#wallCv'), ctx = cv.getContext('2d');
   ctx.setTransform(2,0,0,2,0,0);
+  stage.classList.toggle('wall-pan', state.wall==='custom' && !!state.wallImg);
   if(state.wall==='custom' && state.wallImg){
     if(!wallImgObj || wallImgObj.src !== state.wallImg){ wallImgObj = new Image(); wallImgObj.onload = drawWall; wallImgObj.src = state.wallImg; return; }
     if(!wallImgObj.complete || !wallImgObj.naturalWidth) return;
-    const iw = wallImgObj.naturalWidth, ih = wallImgObj.naturalHeight, k = Math.max(W/iw, H/ih), dw = iw*k, dh = ih*k;
+    const iw = wallImgObj.naturalWidth, ih = wallImgObj.naturalHeight, k = Math.max(W/iw, H/ih)*(state.wallZoom||1), dw = iw*k, dh = ih*k;
     ctx.clearRect(0,0,W,H);
     ctx.drawImage(wallImgObj, (W-dw)*state.wallX/100, (H-dh)*state.wallY/100, dw, dh);
     wallDim(ctx); syncWallGrid(); return;
@@ -1133,6 +1139,7 @@ function syncUI(){
   document.querySelectorAll('#optChecks input').forEach(i=> i.checked = !!state.opts[i.dataset.k]);
   $('#decoColor').value = state.decor.color;
   applyUiFont(); markPixelBold(); $('#iconStyle').value = state.iconStyle || 'pixel'; applyIconStyle();
+  $('#wallZ').value = Math.round((state.wallZoom||1)*100);
   $('#wallX').value = state.wallX; $('#wallY').value = state.wallY; $('#wallDim').value = state.wallDim;
   applyOpts();
 }
@@ -1335,7 +1342,7 @@ function layoutPic(){
   const p = pic(); if(!p) return; const im = p.querySelector('img.mainimg'); if(!im) return;
   const iw = +im.dataset.iw || im.naturalWidth, ih = +im.dataset.ih || im.naturalHeight; if(!iw || !ih) return;
   const W = p.clientWidth, H = p.clientHeight;
-  const k = p.dataset.fit==='contain' ? Math.min(W/iw, H/ih) : Math.max(W/iw, H/ih);
+  const k = (p.dataset.fit==='contain' ? Math.min(W/iw, H/ih) : Math.max(W/iw, H/ih)) * (+(p.dataset.z || 1));
   const w = iw*k, h = ih*k, x = +(p.dataset.x ?? 50), y = +(p.dataset.y ?? 50);
   im.style.width = w+'px'; im.style.height = h+'px'; im.style.left = ((W-w)*x/100)+'px'; im.style.top = ((H-h)*y/100)+'px';
 }
@@ -1352,7 +1359,8 @@ $('#picFile').onchange = e=>{ const f = e.target.files[0]; if(!f) return;
 $('#picFit').onclick = ()=>{ const p = pic(); p.dataset.fit = p.dataset.fit==='contain' ? 'cover' : 'contain';
   layoutPic(); setStatus(p.dataset.fit==='cover' ? '채우기 (꽉 차게)' : '맞추기 (전체 보이게)'); save(); };
 $('#picDel').onclick = ()=>{ const p = pic(); const im = p.querySelector('img.mainimg'); if(im) im.remove(); p.style.backgroundImage=''; p.classList.remove('has'); save(); };
-$('#picX').oninput = $('#picY').oninput = ()=>{ setPicPos(); }; $('#picX').onchange = $('#picY').onchange = save;
+$('#picX').oninput = $('#picY').oninput = ()=>{ setPicPos(); };
+$('#picZ').oninput = e=>{ const p = pic(); if(!p) return; p.dataset.z = +e.target.value/100; layoutPic(); }; $('#picZ').onchange = save; $('#picX').onchange = $('#picY').onchange = save;
 
 $('#stkBtn').onclick = ()=> $('#stkFile').click();
 $('#stkFile').onchange = e=>{ [...e.target.files].forEach((f,i)=> readImage(f, 1000, (url,w,h)=>{
@@ -1367,6 +1375,53 @@ $('#wallFile').onchange = e=>{ const f = e.target.files[0]; if(!f) return;
   e.target.value=''; };
 $('#wallReset').onclick = ()=>{ state.wall = 'theme'; drawWall(); save(); setStatus('시안 기본 배경으로 돌아왔어요'); };
 ['wallX','wallY','wallDim'].forEach(k=>{ $('#'+k).oninput = e=>{ state[k] = +e.target.value; drawWall(); }; $('#'+k).onchange = save; });
+$('#wallZ').oninput = e=>{ state.wallZoom = +e.target.value/100; drawWall(); }; $('#wallZ').onchange = save;
+
+/* ---------- 사진·배경 드래그 이동 / 확대 ---------- */
+const clamp01 = v => Math.min(100, Math.max(0, v));
+function panGeom(kind){
+  if(kind==='pic'){ const p = pic(), im = p && p.querySelector('img.mainimg'); if(!im) return null;
+    return {W:p.clientWidth, H:p.clientHeight, w:im.offsetWidth, h:im.offsetHeight}; }
+  if(!wallImgObj || !wallImgObj.naturalWidth) return null;
+  const iw = wallImgObj.naturalWidth, ih = wallImgObj.naturalHeight, k = Math.max(W/iw, H/ih)*(state.wallZoom||1);
+  return {W, H, w:iw*k, h:ih*k};
+}
+const getXY = kind => kind==='pic' ? [+(pic().dataset.x ?? 50), +(pic().dataset.y ?? 50)] : [state.wallX, state.wallY];
+function setXY(kind, x, y){ x = clamp01(x); y = clamp01(y);
+  if(kind==='pic'){ const p = pic(); p.dataset.x = x; p.dataset.y = y; $('#picX').value = x; $('#picY').value = y; layoutPic(); }
+  else { state.wallX = x; state.wallY = y; $('#wallX').value = x; $('#wallY').value = y; drawWall(); } }
+const getZ = kind => kind==='pic' ? +(pic().dataset.z || 1) : (state.wallZoom || 1);
+function setZ(kind, z){ z = Math.min(5, Math.max(1, z));
+  if(kind==='pic'){ pic().dataset.z = z; $('#picZ').value = Math.round(z*100); layoutPic(); }
+  else { state.wallZoom = z; $('#wallZ').value = Math.round(z*100); drawWall(); } }
+let pan = null; const ptrs = new Map();
+function startPan(kind, e){
+  e.preventDefault(); ptrs.set(e.pointerId, {x:e.clientX, y:e.clientY});
+  if(pan && pan.kind===kind && ptrs.size===2){ const [a,b] = [...ptrs.values()]; pan.pinch = {d0:Math.hypot(a.x-b.x, a.y-b.y)||1, z0:getZ(kind)}; return; }
+  const [x0,y0] = getXY(kind); pan = {kind, sx:e.clientX, sy:e.clientY, x0, y0};
+}
+window.addEventListener('pointermove', e=>{
+  if(!pan || !ptrs.has(e.pointerId)) return; ptrs.set(e.pointerId, {x:e.clientX, y:e.clientY});
+  if(pan.pinch && ptrs.size>=2){ const [a,b] = [...ptrs.values()]; setZ(pan.kind, pan.pinch.z0 * Math.hypot(a.x-b.x, a.y-b.y) / pan.pinch.d0); return; }
+  const g = panGeom(pan.kind); if(!g) return;
+  const dx = (e.clientX-pan.sx)/scale, dy = (e.clientY-pan.sy)/scale;
+  const x = Math.abs(g.W-g.w) > .5 ? pan.x0 + dx*100/(g.W-g.w) : pan.x0;
+  const y = Math.abs(g.H-g.h) > .5 ? pan.y0 + dy*100/(g.H-g.h) : pan.y0;
+  setXY(pan.kind, x, y);
+});
+function endPan(e){
+  if(!ptrs.has(e.pointerId)) return; ptrs.delete(e.pointerId);
+  if(!pan) return;
+  if(ptrs.size===0){ pan = null; save(); return; }
+  pan.pinch = null; const [r] = [...ptrs.values()]; const [x0,y0] = getXY(pan.kind); Object.assign(pan, {sx:r.x, sy:r.y, x0, y0});
+}
+window.addEventListener('pointerup', endPan); window.addEventListener('pointercancel', endPan);
+let wheelT = null;
+stage.addEventListener('wheel', e=>{
+  const pc = e.target.closest('#pic'); if(!pc || !pc.classList.contains('has')) return;
+  e.preventDefault(); setZ('pic', getZ('pic') * (e.deltaY < 0 ? 1.08 : 1/1.08));
+  clearTimeout(wheelT); wheelT = setTimeout(save, 400);
+}, {passive:false});
 
 /* ---------- 개체 선택/이동 ---------- */
 let sel = null;
@@ -1380,7 +1435,9 @@ let act = null;
 stage.addEventListener('pointerdown', e=>{
   const o = e.target.closest('.obj');
   if(!o){ select(null);
-    if(e.target.closest('#pic') && !e.target.closest('[contenteditable="true"]')) $('#picFile').click();
+    const pc = e.target.closest('#pic');
+    if(pc && !e.target.closest('[contenteditable="true"]')){ if(!pc.classList.contains('has')) $('#picFile').click(); else startPan('pic', e); return; }
+    if(state.wall==='custom' && state.wallImg && !e.target.closest('.win, .taskbar, .desk-icons, [contenteditable="true"]')) startPan('wall', e);
     return; }
   const h = e.target.closest('.h');
   select(o);
@@ -1506,7 +1563,7 @@ function fresh(){
   save(); fixSvgs();
 }
 $('#resetBtn').onclick = ()=>{ if(!confirm('모든 내용을 지우고 처음 상태로 돌릴까요?')) return;
-  state = {theme:state.theme, decor:{...THEMES[state.theme].decor}, opts:{icons:1,task:1,back:0,cursor:1}, wall:'theme', wallImg:null, wallX:50, wallY:50, wallDim:0, uifont:'', iconStyle:'pixel'}; fresh(); applyTheme(state.theme,false); setStatus('초기화 완료'); };
+  state = {theme:state.theme, decor:{...THEMES[state.theme].decor}, opts:{icons:1,task:1,back:0,cursor:1}, wall:'theme', wallImg:null, wallX:50, wallY:50, wallZoom:1, wallDim:0, uifont:'', iconStyle:'pixel'}; fresh(); applyTheme(state.theme,false); setStatus('초기화 완료'); };
 
 /* ---------- PNG 저장 ---------- */
 $('#saveBtn').onclick = async ()=>{
@@ -1537,7 +1594,7 @@ if(!had) fresh(); setTimeout(fixSvgs, 50); if(had){ scene.querySelectorAll('.ql'
 applyTheme(state.theme, false);
 const p = pic(); if(p){
   const m = /([\d.]+)% ([\d.]+)%/.exec(p.style.backgroundPosition||''); if(m && p.dataset.x===undefined){ p.dataset.x = m[1]; p.dataset.y = m[2]; }
-  $('#picX').value = p.dataset.x ?? 50; $('#picY').value = p.dataset.y ?? 50;
+  $('#picX').value = p.dataset.x ?? 50; $('#picY').value = p.dataset.y ?? 50; $('#picZ').value = Math.round((+(p.dataset.z||1))*100);
   const bg = /url\("?(.*?)"?\)$/.exec(p.style.backgroundImage||'');
   if(bg){ const t = new Image(); t.onload = ()=>{ setPicImage(bg[1], t.naturalWidth, t.naturalHeight); p.style.backgroundSize=''; p.style.backgroundPosition=''; save(); }; t.src = bg[1]; }
   else layoutPic();
